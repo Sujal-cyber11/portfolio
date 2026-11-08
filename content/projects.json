@@ -1,0 +1,42 @@
+[
+  {
+    "id": "packet-lens",
+    "title": "Packet Lens",
+    "description": "[Placeholder entry] A small Python CLI that captures local network traffic and prints a readable summary, built while learning networking fundamentals.",
+    "tags": ["Python", "Networking", "Scapy"],
+    "repoUrl": "https://github.com/your-github-username/packet-lens",
+    "featured": true,
+    "date": "2026-10-18",
+    "status": "building"
+  },
+  {
+    "id": "c-memory-playground",
+    "title": "C Memory Playground",
+    "description": "[Placeholder entry] A set of exercises exploring pointers, manual memory management and common buffer-overflow patterns in C.",
+    "tags": ["C", "Memory", "Systems"],
+    "repoUrl": "https://github.com/your-github-username/c-memory-playground",
+    "featured": true,
+    "date": "2026-08-30",
+    "status": "done"
+  },
+  {
+    "id": "ctf-notes",
+    "title": "CTF Notes",
+    "description": "[Placeholder entry] Short write-ups and reusable snippets from beginner capture-the-flag challenges.",
+    "tags": ["Security", "Linux", "Writing"],
+    "repoUrl": "https://github.com/your-github-username/ctf-notes",
+    "featured": false,
+    "date": "2026-07-12",
+    "status": "done"
+  },
+  {
+    "id": "portfolio",
+    "title": "This Portfolio",
+    "description": "[Placeholder entry] The Next.js site you are reading, with content validation, festival themes and a small content CLI.",
+    "tags": ["Next.js", "TypeScript", "CSS"],
+    "repoUrl": "https://github.com/your-github-username/portfolio",
+    "featured": false,
+    "date": "2026-11-01",
+    "status": "building"
+  }
+]

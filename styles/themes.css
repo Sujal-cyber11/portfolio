@@ -1,0 +1,199 @@
+html.theme-diwali,
+.theme-diwali.theme-diwali {
+  color-scheme: dark;
+  --bg: #170d06;
+  --surface: #24150a;
+  --surface-strong: #321d0d;
+  --text: #fff3d6;
+  --muted: #dfbf8c;
+  --border: #5b3717;
+  --accent: #ffb54d;
+  --accent-strong: #ffd37d;
+  --accent-soft: #3f260f;
+  --accent-contrast: #261200;
+  --focus: #ffd166;
+  --shadow: 0 18px 55px rgb(255 160 60 / 14%);
+}
+
+html.theme-holi,
+.theme-holi.theme-holi {
+  color-scheme: dark;
+  --bg: #24101f;
+  --surface: #32172b;
+  --surface-strong: #401d36;
+  --text: #fff1f7;
+  --muted: #e2b8cf;
+  --border: #5c2b48;
+  --accent: #ff8fc3;
+  --accent-strong: #ffc0dd;
+  --accent-soft: #4a1f3b;
+  --accent-contrast: #2b0b1a;
+  --focus: #ffd166;
+}
+
+html.theme-independence-day,
+.theme-independence-day.theme-independence-day {
+  color-scheme: dark;
+  --bg: #071726;
+  --surface: #0d2136;
+  --surface-strong: #132c46;
+  --text: #f3f8ff;
+  --muted: #b7c9de;
+  --border: #244868;
+  --accent: #ff9933;
+  --accent-strong: #ffc078;
+  --accent-soft: #163a26;
+  --accent-contrast: #1d1100;
+  --focus: #ffd166;
+}
+
+html.theme-republic-day,
+.theme-republic-day.theme-republic-day {
+  color-scheme: dark;
+  --bg: #0a1a2b;
+  --surface: #10253b;
+  --surface-strong: #17314d;
+  --text: #f4f9ff;
+  --muted: #b9cce1;
+  --border: #294f72;
+  --accent: #9bd39a;
+  --accent-strong: #c4e8c3;
+  --accent-soft: #1f3a2d;
+  --accent-contrast: #0a2110;
+  --focus: #ffd166;
+}
+
+html.theme-christmas,
+.theme-christmas.theme-christmas {
+  color-scheme: dark;
+  --bg: #0c1913;
+  --surface: #13261c;
+  --surface-strong: #1a3326;
+  --text: #f4fff8;
+  --muted: #b9d7c2;
+  --border: #2b4b38;
+  --accent: #e56b6f;
+  --accent-strong: #ffb3b5;
+  --accent-soft: #3a1b1e;
+  --accent-contrast: #1d0708;
+  --focus: #ffcf70;
+}
+
+html.theme-new-year,
+.theme-new-year.theme-new-year {
+  color-scheme: dark;
+  --bg: #090f22;
+  --surface: #111a34;
+  --surface-strong: #182444;
+  --text: #f4f6ff;
+  --muted: #b8c1e2;
+  --border: #2b3964;
+  --accent: #ffd166;
+  --accent-strong: #ffe3a3;
+  --accent-soft: #2b2a4c;
+  --accent-contrast: #241a00;
+  --focus: #9ecbff;
+}
+
+.festival-decoration {
+  display: none;
+}
+
+html.theme-diwali .festival-decoration {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html.theme-diwali .diya {
+  position: absolute;
+  bottom: -4rem;
+  width: 1.6rem;
+  height: 0.75rem;
+  border-radius: 0 0 55% 55%;
+  background: linear-gradient(
+    180deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 55%, var(--accent-contrast))
+  );
+  box-shadow: 0 0 1.4rem 0.4rem
+    color-mix(in srgb, var(--accent) 55%, transparent);
+  opacity: 0;
+  animation: diya-rise 16s linear infinite;
+}
+
+html.theme-diwali .diya::before {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  width: 0.45rem;
+  height: 0.75rem;
+  border-radius: 50% 50% 45% 45%;
+  background: radial-gradient(
+    circle at 50% 70%,
+    var(--accent-strong),
+    var(--accent) 55%,
+    transparent 72%
+  );
+  content: "";
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 0.5rem var(--accent));
+}
+
+html.theme-diwali .diya:nth-child(1) {
+  left: 8%;
+  animation-delay: -2s;
+}
+
+html.theme-diwali .diya:nth-child(2) {
+  left: 24%;
+  animation-delay: -9s;
+  animation-duration: 19s;
+}
+
+html.theme-diwali .diya:nth-child(3) {
+  left: 41%;
+  animation-delay: -5s;
+  animation-duration: 14s;
+}
+
+html.theme-diwali .diya:nth-child(4) {
+  left: 58%;
+  animation-delay: -13s;
+  animation-duration: 18s;
+}
+
+html.theme-diwali .diya:nth-child(5) {
+  left: 76%;
+  animation-delay: -7s;
+  animation-duration: 15s;
+}
+
+html.theme-diwali .diya:nth-child(6) {
+  left: 91%;
+  animation-delay: -16s;
+  animation-duration: 20s;
+}
+
+@keyframes diya-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.8);
+  }
+
+  12% {
+    opacity: 0.85;
+  }
+
+  80% {
+    opacity: 0.55;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(2.5rem, -110vh, 0) scale(1.05);
+  }
+}
