@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
+import type { SweetImageMap } from "@/lib/gift-images";
 import type { ThemeFestivalOption, ThemeRuntimeConfig } from "@/lib/theme";
 
 const ThemeContext = createContext<ThemeRuntimeConfig | null>(null);
@@ -8,17 +9,19 @@ const ThemeContext = createContext<ThemeRuntimeConfig | null>(null);
 interface ThemeProviderProps {
   festivals: ThemeFestivalOption[];
   scheduled: ThemeFestivalOption | null;
+  sweetImages: SweetImageMap;
   children: ReactNode;
 }
 
 export function ThemeProvider({
   festivals,
   scheduled,
+  sweetImages,
   children,
 }: ThemeProviderProps) {
   const runtime = useMemo(
-    () => ({ festivals, scheduled }),
-    [festivals, scheduled],
+    () => ({ festivals, scheduled, sweetImages }),
+    [festivals, scheduled, sweetImages],
   );
 
   return (

@@ -4,10 +4,33 @@ import {
   INTERACTIVE_SELECTOR,
   isInteractivePointerTarget,
   isLanternHit,
+  isWindWindowActive,
+  MAX_LANTERN_WIND_SPEED,
+  pointerMovementExceedsThreshold,
   recordLanternBurst,
+  stepLanternWind,
+  type LanternWindState,
+  type WindForce,
 } from "@/lib/lanterns";
 
 const bounds = { x: 100, y: 200, width: 40, height: 60 };
+const stillForce: WindForce = { x: 0, y: 0, strength: 0 };
+const rightForce: WindForce = { x: 1, y: 0, strength: 1 };
+
+function simulateWind(
+  framesPerSecond: number,
+  seconds: number,
+  force: WindForce,
+): LanternWindState {
+  const state: LanternWindState = { x: 0, y: 0, vx: 0, vy: 0 };
+  const frames = Math.round(framesPerSecond * seconds);
+
+  for (let frame = 0; frame < frames; frame += 1) {
+    stepLanternWind(state, force, 1 / framesPerSecond);
+  }
+
+  return state;
+}
 
 describe("isLanternHit", () => {
   it("detects a pointer inside the lantern bounds", () => {
@@ -81,6 +104,42 @@ describe("isInteractivePointerTarget", () => {
     expect(isInteractivePointerTarget({ closest: () => null })).toBe(false);
     expect(isInteractivePointerTarget(null)).toBe(false);
     expect(isInteractivePointerTarget("body")).toBe(false);
+  });
+});
+
+describe("lantern wind integration", () => {
+  it("travels the same distance at 30fps and 120fps", () => {
+    const at30 = simulateWind(30, 1, rightForce);
+    const at120 = simulateWind(120, 1, rightForce);
+    const tolerance = Math.max(0.5, Math.abs(at30.x) * 0.03);
+
+    expect(Math.abs(at30.x - at120.x)).toBeLessThan(tolerance);
+    expect(at30.x).toBeGreaterThan(0);
+  });
+
+  it("keeps wind velocity under the cap for five seconds", () => {
+    const state = simulateWind(120, 5, rightForce);
+
+    expect(Math.hypot(state.vx, state.vy)).toBeLessThanOrEqual(
+      MAX_LANTERN_WIND_SPEED + 0.001,
+    );
+  });
+
+  it("does not move wind state when the pointer is still", () => {
+    const state: LanternWindState = { x: 0, y: 0, vx: 0, vy: 0 };
+
+    for (let frame = 0; frame < 300; frame += 1) {
+      stepLanternWind(state, stillForce, 1 / 60);
+    }
+
+    expect(state).toEqual({ x: 0, y: 0, vx: 0, vy: 0 });
+    expect(isWindWindowActive(200, 0)).toBe(false);
+    expect(
+      pointerMovementExceedsThreshold({ x: 0, y: 0 }, { x: 1, y: 0 }),
+    ).toBe(false);
+    expect(
+      pointerMovementExceedsThreshold({ x: 0, y: 0 }, { x: 2, y: 0 }),
+    ).toBe(true);
   });
 });
 

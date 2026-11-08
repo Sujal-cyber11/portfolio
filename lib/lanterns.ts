@@ -16,6 +16,23 @@ export interface WindForce {
   strength: number;
 }
 
+export interface LanternWindState {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+}
+
+export const MAX_LANTERN_WIND_SPEED = 180;
+export const POINTER_MOVE_THRESHOLD = 2;
+export const WIND_ACTIVE_WINDOW_MS = 120;
+export const MAX_DELTA_SECONDS = 1 / 30;
+export const WIND_DAMPING_PER_FRAME = 0.92;
+
+const WIND_ACCELERATION = 900;
+const WIND_SPRING = 4.5;
+const WIND_SUBSTEP_SECONDS = 1 / 240;
+
 export interface BurstCounterResult {
   count: number;
   triggered: boolean;
@@ -58,6 +75,64 @@ export function getWindForce(
     y: dy / distance,
     strength: falloff * falloff,
   };
+}
+
+export function pointerMovementExceedsThreshold(
+  previous: Point,
+  next: Point,
+  threshold = POINTER_MOVE_THRESHOLD,
+): boolean {
+  return Math.hypot(next.x - previous.x, next.y - previous.y) >= threshold;
+}
+
+export function isWindWindowActive(
+  now: number,
+  lastMovementAt: number,
+  active = true,
+): boolean {
+  return active && now - lastMovementAt <= WIND_ACTIVE_WINDOW_MS;
+}
+
+export function stepLanternWind(
+  state: LanternWindState,
+  force: WindForce,
+  deltaSeconds: number,
+): LanternWindState {
+  const delta = Math.min(Math.max(deltaSeconds, 0), MAX_DELTA_SECONDS);
+
+  if (delta === 0) {
+    return state;
+  }
+
+  let remaining = delta;
+
+  while (remaining > 0) {
+    const step = Math.min(WIND_SUBSTEP_SECONDS, remaining);
+    const damping = Math.pow(WIND_DAMPING_PER_FRAME, step * 60);
+
+    state.vx =
+      (state.vx + force.x * force.strength * WIND_ACCELERATION * step) *
+      damping;
+    state.vy =
+      (state.vy + force.y * force.strength * WIND_ACCELERATION * step) *
+      damping;
+    state.vx += -state.x * WIND_SPRING * step;
+    state.vy += -state.y * WIND_SPRING * step;
+
+    const speed = Math.hypot(state.vx, state.vy);
+
+    if (speed > MAX_LANTERN_WIND_SPEED) {
+      const scale = MAX_LANTERN_WIND_SPEED / speed;
+      state.vx *= scale;
+      state.vy *= scale;
+    }
+
+    state.x += state.vx * step;
+    state.y += state.vy * step;
+    remaining -= step;
+  }
+
+  return state;
 }
 
 export function recordLanternBurst(

@@ -6,7 +6,12 @@ import {
   getWindForce,
   isInteractivePointerTarget,
   isLanternHit,
+  isWindWindowActive,
+  MAX_DELTA_SECONDS,
+  pointerMovementExceedsThreshold,
   recordLanternBurst,
+  stepLanternWind,
+  type LanternWindState,
 } from "@/lib/lanterns";
 import styles from "./DiwaliAmbient.module.css";
 
@@ -23,10 +28,7 @@ interface Lantern extends LanternShape {
   speed: number;
   swayAmplitude: number;
   swaySpeed: number;
-  windX: number;
-  windY: number;
-  windVX: number;
-  windVY: number;
+  wind: LanternWindState;
   renderX: number;
   renderY: number;
 }
@@ -52,6 +54,7 @@ interface Firework {
 const MAX_SPARKS = 320;
 const WIND_RADIUS = 120;
 const LANTERN_TOLERANCE = 10;
+const STILL_POINTER_FORCE = { x: 0, y: 0, strength: 0 };
 const BURST_COLORS = ["#ffd166", "#ffb347", "#ff7a2f", "#ff4d2e"];
 const FIREWORK_COLORS = ["#ffd166", "#ffb347", "#ff7a2f", "#ff4d2e"];
 
@@ -64,86 +67,149 @@ function drawLantern(
 ): void {
   const { width, height, depth, phase } = lantern;
   const flicker =
-    0.84 +
-    0.16 * Math.sin(time * 0.006 + phase * 5) * Math.sin(time * 0.003 + phase);
+    0.86 +
+    0.14 *
+      Math.sin(time * 0.005 + phase * 4) *
+      Math.sin(time * 0.0023 + phase * 1.7);
+  const topY = -height * 0.48;
+  const bottomY = height * 0.46;
+  const topHalf = width * 0.25;
+  const bottomHalf = width * 0.5;
 
   context.save();
   context.translate(x, y);
-  context.globalAlpha = 0.58 + depth * 0.42;
+  context.globalAlpha = 0.55 + depth * 0.45;
 
-  const halo = context.createRadialGradient(0, 0, 0, 0, 0, width * 1.7);
-  halo.addColorStop(0, `rgba(255, 150, 60, ${0.16 * flicker})`);
+  const halo = context.createRadialGradient(0, 0, 0, 0, 0, width * 1.75);
+  halo.addColorStop(0, `rgba(255, 150, 60, ${0.18 * flicker})`);
+  halo.addColorStop(0.55, `rgba(255, 100, 30, ${0.08 * flicker})`);
   halo.addColorStop(1, "rgba(255, 100, 30, 0)");
   context.fillStyle = halo;
   context.beginPath();
-  context.arc(0, 0, width * 1.7, 0, Math.PI * 2);
+  context.arc(0, 0, width * 1.75, 0, Math.PI * 2);
   context.fill();
 
-  const body = context.createLinearGradient(0, -height / 2, 0, height / 2);
-  body.addColorStop(0, "#ffb347");
-  body.addColorStop(0.45, "#ff7a2f");
-  body.addColorStop(1, "#c92b1d");
-  context.fillStyle = body;
   context.beginPath();
-  context.ellipse(0, 0, width / 2, height / 2, 0, 0, Math.PI * 2);
+  context.moveTo(-topHalf, topY);
+  context.bezierCurveTo(
+    -width * 0.46,
+    -height * 0.24,
+    -bottomHalf,
+    height * 0.12,
+    -bottomHalf,
+    bottomY,
+  );
+  context.quadraticCurveTo(0, bottomY + height * 0.07, bottomHalf, bottomY);
+  context.bezierCurveTo(
+    bottomHalf,
+    height * 0.12,
+    width * 0.46,
+    -height * 0.24,
+    topHalf,
+    topY,
+  );
+  context.quadraticCurveTo(0, topY - height * 0.05, -topHalf, topY);
+  context.closePath();
+
+  const body = context.createLinearGradient(0, topY, 0, bottomY);
+  body.addColorStop(0, "#ffb347");
+  body.addColorStop(0.42, "#ff7a2f");
+  body.addColorStop(1, "#b71f17");
+  context.fillStyle = body;
   context.fill();
 
   context.save();
-  context.beginPath();
-  context.ellipse(0, 0, width / 2, height / 2, 0, 0, Math.PI * 2);
   context.clip();
-
-  context.strokeStyle = "rgba(70, 15, 5, 0.25)";
+  context.strokeStyle = "rgba(72, 16, 7, 0.28)";
   context.lineWidth = 1;
 
-  for (let rib = -1; rib <= 1; rib += 1) {
+  for (const ratio of [-0.55, -0.18, 0.18, 0.55]) {
     context.beginPath();
-    context.moveTo(rib * width * 0.22, -height / 2);
+    context.moveTo(topHalf * ratio, topY + height * 0.04);
     context.quadraticCurveTo(
-      rib * width * 0.3,
+      bottomHalf * ratio * 0.55,
       0,
-      rib * width * 0.22,
-      height / 2,
+      bottomHalf * ratio,
+      bottomY - height * 0.03,
     );
     context.stroke();
   }
 
+  const sheen = context.createLinearGradient(-width * 0.4, 0, width * 0.4, 0);
+  sheen.addColorStop(0, "rgba(255, 220, 160, 0)");
+  sheen.addColorStop(0.45, `rgba(255, 230, 180, ${0.1 * flicker})`);
+  sheen.addColorStop(1, "rgba(255, 220, 160, 0)");
+  context.fillStyle = sheen;
+  context.fillRect(-width, topY, width * 2, height);
   context.restore();
 
   context.fillStyle = "#3a1408";
-  context.fillRect(-width * 0.25, -height * 0.56, width * 0.5, height * 0.07);
-  context.fillRect(-width * 0.25, height * 0.49, width * 0.5, height * 0.06);
+  context.beginPath();
+  context.ellipse(0, topY, topHalf * 0.85, height * 0.045, 0, 0, Math.PI * 2);
+  context.fill();
+
+  context.fillStyle = "#471408";
+  context.beginPath();
+  context.ellipse(0, bottomY, bottomHalf, height * 0.09, 0, 0, Math.PI * 2);
+  context.fill();
 
   const glow = context.createRadialGradient(
     0,
-    height * 0.46,
+    bottomY,
     0,
     0,
-    height * 0.46,
-    width * 0.54,
+    bottomY,
+    width * 0.62,
   );
-  glow.addColorStop(0, `rgba(255, 230, 140, ${0.9 * flicker})`);
-  glow.addColorStop(0.5, `rgba(255, 160, 60, ${0.5 * flicker})`);
-  glow.addColorStop(1, "rgba(255, 130, 40, 0)");
+  glow.addColorStop(0, `rgba(255, 238, 160, ${0.95 * flicker})`);
+  glow.addColorStop(0.45, `rgba(255, 170, 65, ${0.58 * flicker})`);
+  glow.addColorStop(1, "rgba(255, 120, 35, 0)");
   context.fillStyle = glow;
   context.beginPath();
   context.ellipse(
     0,
-    height * 0.46,
-    width * 0.48,
-    height * 0.22,
+    bottomY,
+    bottomHalf * 0.92,
+    height * 0.17,
     0,
     0,
     Math.PI * 2,
   );
   context.fill();
 
-  context.strokeStyle = "rgba(255, 210, 120, 0.75)";
-  context.lineWidth = 1;
+  const flameHeight = height * (0.12 + 0.03 * flicker);
+  const flameWidth = width * (0.07 + 0.012 * flicker);
+  const flame = context.createRadialGradient(
+    0,
+    bottomY,
+    0,
+    0,
+    bottomY,
+    flameHeight,
+  );
+  flame.addColorStop(0, "#fff6c7");
+  flame.addColorStop(0.45, "#ffcc55");
+  flame.addColorStop(1, "rgba(255, 120, 30, 0)");
+  context.fillStyle = flame;
   context.beginPath();
-  context.moveTo(0, height * 0.55);
-  context.lineTo(0, height * 0.7);
-  context.stroke();
+  context.moveTo(0, bottomY + height * 0.02);
+  context.bezierCurveTo(
+    -flameWidth,
+    bottomY - flameHeight * 0.3,
+    -flameWidth * 0.55,
+    bottomY - flameHeight * 0.95,
+    0,
+    bottomY - flameHeight,
+  );
+  context.bezierCurveTo(
+    flameWidth * 0.55,
+    bottomY - flameHeight * 0.95,
+    flameWidth,
+    bottomY - flameHeight * 0.3,
+    0,
+    bottomY + height * 0.02,
+  );
+  context.fill();
 
   context.restore();
 }
@@ -186,6 +252,7 @@ export function DiwaliAmbient() {
     let pointerActive = false;
     let pointerX = 0;
     let pointerY = 0;
+    let lastPointerMovementAt = Number.NEGATIVE_INFINITY;
     let pointerOverInteractive = false;
     let cursorOverridden = false;
     let previousCursor = "";
@@ -222,10 +289,7 @@ export function DiwaliAmbient() {
         swayAmplitude: 5 + depth * 15,
         swaySpeed: 0.2 + Math.random() * 0.5,
         phase: Math.random() * Math.PI * 2,
-        windX: 0,
-        windY: 0,
-        windVX: 0,
-        windVY: 0,
+        wind: { x: 0, y: 0, vx: 0, vy: 0 },
         renderX: baseX,
         renderY: y,
       };
@@ -420,10 +484,24 @@ export function DiwaliAmbient() {
         return;
       }
 
-      pointerActive = true;
-      pointerX = event.clientX;
-      pointerY = event.clientY;
+      const nextX = event.clientX;
+      const nextY = event.clientY;
+      const significant =
+        !pointerActive ||
+        pointerMovementExceedsThreshold(
+          { x: pointerX, y: pointerY },
+          { x: nextX, y: nextY },
+        );
+
       pointerOverInteractive = isInteractivePointerTarget(event.target);
+
+      if (significant) {
+        pointerActive = true;
+        pointerX = nextX;
+        pointerY = nextY;
+        lastPointerMovementAt = performance.now();
+      }
+
       updateCursorFromHit();
     }
 
@@ -483,37 +561,32 @@ export function DiwaliAmbient() {
         }
       }
 
+      const windActive =
+        finePointer &&
+        isWindWindowActive(time, lastPointerMovementAt, pointerActive);
+
       for (const lantern of lanterns) {
         const sway =
           Math.sin(time * lantern.swaySpeed + lantern.phase) *
           lantern.swayAmplitude;
-        const centerX = lantern.baseX + sway + lantern.windX;
-        const centerY = lantern.y + lantern.windY;
+        const centerX = lantern.baseX + sway + lantern.wind.x;
+        const centerY = lantern.y + lantern.wind.y;
+        const force = windActive
+          ? getWindForce(
+              { x: pointerX, y: pointerY },
+              { x: centerX, y: centerY },
+              WIND_RADIUS,
+            )
+          : STILL_POINTER_FORCE;
 
-        if (finePointer && pointerActive) {
-          const force = getWindForce(
-            { x: pointerX, y: pointerY },
-            { x: centerX, y: centerY },
-            WIND_RADIUS,
-          );
-
-          if (force.strength > 0) {
-            lantern.windVX += force.x * force.strength * 320 * delta;
-            lantern.windVY += force.y * force.strength * 160 * delta;
-          }
-        }
-
-        lantern.windVX += (-lantern.windX * 2.6 - lantern.windVX * 3.4) * delta;
-        lantern.windVY += (-lantern.windY * 2.6 - lantern.windVY * 3.4) * delta;
-        lantern.windX += lantern.windVX * delta;
-        lantern.windY += lantern.windVY * delta;
+        stepLanternWind(lantern.wind, force, delta);
         lantern.y -= lantern.speed * delta;
         lantern.renderX =
           lantern.baseX +
           Math.sin(time * lantern.swaySpeed + lantern.phase) *
             lantern.swayAmplitude +
-          lantern.windX;
-        lantern.renderY = lantern.y + lantern.windY;
+          lantern.wind.x;
+        lantern.renderY = lantern.y + lantern.wind.y;
 
         if (lantern.renderY < -lantern.height * 1.5) {
           resetLantern(lantern);
@@ -547,7 +620,10 @@ export function DiwaliAmbient() {
         return;
       }
 
-      const delta = Math.min(0.033, Math.max(0.001, (time - lastFrame) / 1000));
+      const delta = Math.min(
+        MAX_DELTA_SECONDS,
+        Math.max(0.001, (time - lastFrame) / 1000),
+      );
       lastFrame = time;
       update(delta, time);
       draw(time);

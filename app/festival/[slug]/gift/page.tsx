@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { FestivalGift } from "@/components/festival/gift/FestivalGift";
 import { ThemedLink } from "@/components/theme/ThemedLink";
 import { getFestivals } from "@/lib/content";
+import { getSweetImages } from "@/lib/gift-images";
 import { sanitizeRecipientName } from "@/lib/sanitize";
 import { buildPageMetadata } from "@/lib/seo";
 import type { Festival } from "@/lib/schema";
@@ -50,6 +51,8 @@ function GiftContent({
   festival: Festival;
   recipient: string | null;
 }) {
+  const sweetImages = getSweetImages();
+
   return (
     <section
       aria-labelledby="gift-title"
@@ -65,6 +68,7 @@ function GiftContent({
           className={styles.gift}
           festivalName={festival.name}
           gift={festival.gift}
+          images={sweetImages}
           interactive={false}
           opened
         />

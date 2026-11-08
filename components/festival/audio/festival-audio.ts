@@ -1,25 +1,101 @@
-const SOUND_STORAGE_KEY = "festival-sound";
+export const FESTIVAL_SOUND_STORAGE_KEY = "festival-sound";
+
+export interface FestivalSoundStorage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+}
 
 let audioContext: AudioContext | null = null;
 let masterGain: GainNode | null = null;
 const chimeTimes: number[] = [];
 
-export function isFestivalSoundEnabled(): boolean {
+export function soundPreferenceFromValue(value: string | null): boolean {
+  return value !== "off";
+}
+
+export function soundPreferenceValue(enabled: boolean): "on" | "off" {
+  return enabled ? "on" : "off";
+}
+
+export function readFestivalSoundPreference(
+  storage: FestivalSoundStorage | null,
+): boolean {
+  if (!storage) {
+    return true;
+  }
+
   try {
-    return window.localStorage.getItem(SOUND_STORAGE_KEY) !== "off";
+    return soundPreferenceFromValue(
+      storage.getItem(FESTIVAL_SOUND_STORAGE_KEY),
+    );
   } catch {
     return true;
   }
 }
 
-export function setFestivalSoundEnabled(enabled: boolean): void {
-  try {
-    window.localStorage.setItem(SOUND_STORAGE_KEY, enabled ? "on" : "off");
-  } catch {
+export function writeFestivalSoundPreference(
+  storage: FestivalSoundStorage | null,
+  enabled: boolean,
+): void {
+  if (!storage) {
     return;
   }
 
-  window.dispatchEvent(new Event("festival-sound-change"));
+  try {
+    storage.setItem(FESTIVAL_SOUND_STORAGE_KEY, soundPreferenceValue(enabled));
+  } catch {
+    return;
+  }
+}
+
+function browserStorage(): FestivalSoundStorage | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+export function isFestivalSoundEnabled(): boolean {
+  return readFestivalSoundPreference(browserStorage());
+}
+
+export function subscribeFestivalSound(callback: () => void): () => void {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  function handleChange(): void {
+    callback();
+  }
+
+  window.addEventListener("storage", handleChange);
+  window.addEventListener("festival-sound-change", handleChange);
+
+  return () => {
+    window.removeEventListener("storage", handleChange);
+    window.removeEventListener("festival-sound-change", handleChange);
+  };
+}
+
+export function getFestivalSoundSnapshot(): boolean {
+  return isFestivalSoundEnabled();
+}
+
+export function getServerFestivalSoundSnapshot(): boolean {
+  return true;
+}
+
+export function setFestivalSoundEnabled(enabled: boolean): void {
+  writeFestivalSoundPreference(browserStorage(), enabled);
+
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("festival-sound-change"));
+  }
 }
 
 function getMasterGain(): GainNode | null {

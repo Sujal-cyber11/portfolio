@@ -1,3 +1,4 @@
+import type { SweetImageMap } from "@/lib/gift-images";
 import type { FestivalGiftConfig } from "@/lib/schema";
 
 export const THEME_QUERY_PARAM = "theme";
@@ -34,6 +35,7 @@ export interface ResolveThemeInput {
 export interface ThemeRuntimeConfig {
   festivals: ThemeFestivalOption[];
   scheduled: ThemeFestivalOption | null;
+  sweetImages: SweetImageMap;
 }
 
 export interface ThemeToggleState {

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { FestivalAmbient } from "@/components/festival/ambient/FestivalAmbient";
-import { FestivalDecorations } from "@/components/festival/FestivalDecorations";
 import { ThemeScript } from "@/components/festival/ThemeScript";
 import { NeuronBackdrop } from "@/components/layout/NeuronBackdrop";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -11,6 +10,7 @@ import { ThemeBar } from "@/components/theme/ThemeBar";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ThemeSync } from "@/components/theme/ThemeSync";
 import { getCurrentFestival, getFestivals, getProfile } from "@/lib/content";
+import { getSweetImages } from "@/lib/gift-images";
 import { getSiteUrl } from "@/lib/site";
 import { resolveTheme, type ThemeFestivalOption } from "@/lib/theme";
 import "./globals.css";
@@ -82,6 +82,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const festivalThemes = Object.fromEntries(
     festivalOptions.map((festival) => [festival.slug, festival.themeClass]),
   );
+  const sweetImages = getSweetImages();
   const htmlClassName = activeThemeClass
     ? `${mono.variable} ${activeThemeClass}`
     : mono.variable;
@@ -99,9 +100,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <NeuronBackdrop />
-        <FestivalDecorations />
         <FestivalAmbient />
-        <ThemeProvider festivals={festivalOptions} scheduled={scheduled}>
+        <ThemeProvider
+          festivals={festivalOptions}
+          scheduled={scheduled}
+          sweetImages={sweetImages}
+        >
           <ThemeBar />
           <ThemeSync />
           <FestivalSplashHost profileName={profile.name} />

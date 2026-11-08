@@ -44,6 +44,23 @@
   fill: rgb(0 0 0 / 35%);
 }
 
+.box {
+  filter: drop-shadow(0 10px 12px rgb(0 0 0 / 32%));
+}
+
+.sweetArt,
+.sweetPhoto {
+  filter: drop-shadow(0 5px 5px rgb(0 0 0 / 34%));
+}
+
+.sweetPhoto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+}
+
 .body {
   fill: var(--gift-body);
 }

@@ -3,6 +3,12 @@
 import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import {
+  getFestivalSoundSnapshot,
+  getServerFestivalSoundSnapshot,
+  setFestivalSoundEnabled,
+  subscribeFestivalSound,
+} from "@/components/festival/audio/festival-audio";
+import {
   findThemeFestival,
   getThemeToggleState,
   THEME_DEFAULT,
@@ -42,6 +48,11 @@ export function ThemeBar() {
     pageFestival,
     festivals: runtime.festivals,
   });
+  const soundEnabled = useSyncExternalStore(
+    subscribeFestivalSound,
+    getFestivalSoundSnapshot,
+    getServerFestivalSoundSnapshot,
+  );
 
   if (!state.visible || !state.festival) {
     return null;
@@ -70,6 +81,22 @@ export function ThemeBar() {
           >
             Replay wish
           </button>
+
+          {state.checked ? (
+            <button
+              aria-checked={soundEnabled}
+              aria-label="Festival sound"
+              className={styles.switch}
+              onClick={() => setFestivalSoundEnabled(!soundEnabled)}
+              role="switch"
+              type="button"
+            >
+              <span className={styles.label}>Sound</span>
+              <span aria-hidden="true" className={styles.track}>
+                <span className={styles.knob} />
+              </span>
+            </button>
+          ) : null}
 
           <button
             aria-checked={state.checked}

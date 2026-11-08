@@ -415,6 +415,7 @@ export function FestivalSplashHost({ profileName }: { profileName: string }) {
               <FestivalGift
                 festivalName={festival.name}
                 gift={festival.gift}
+                images={runtime.sweetImages}
                 interactive={!reducedMotion}
                 onOpen={handleGiftOpen}
                 opened={giftOpened || reducedMotion}
