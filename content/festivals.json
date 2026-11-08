@@ -9,7 +9,17 @@
     "themeClass": "theme-diwali",
     "greeting": "Happy Diwali",
     "accentEmoji": "🪔",
-    "enabled": true
+    "enabled": true,
+    "gift": {
+      "type": "sweets",
+      "closingLine": "Wishing you light and sweetness.",
+      "palette": {
+        "body": "#ff8a3d",
+        "lid": "#ffd166",
+        "ribbon": "#c92b1d",
+        "glow": "#ffb347"
+      }
+    }
   },
   {
     "id": "holi",
@@ -21,7 +31,17 @@
     "themeClass": "theme-holi",
     "greeting": "Happy Holi",
     "accentEmoji": "🎨",
-    "enabled": true
+    "enabled": true,
+    "gift": {
+      "type": "wrapped",
+      "closingLine": "May your days stay bright and colourful.",
+      "palette": {
+        "body": "#ff8fc3",
+        "lid": "#ffc0dd",
+        "ribbon": "#9b4dff",
+        "glow": "#ff8fc3"
+      }
+    }
   },
   {
     "id": "independence-day",
@@ -33,7 +53,17 @@
     "themeClass": "theme-independence-day",
     "greeting": "Happy Independence Day",
     "accentEmoji": "🇮🇳",
-    "enabled": true
+    "enabled": true,
+    "gift": {
+      "type": "wrapped",
+      "closingLine": "Wishing you pride, courage and progress.",
+      "palette": {
+        "body": "#ff9933",
+        "lid": "#f3f8ff",
+        "ribbon": "#138808",
+        "glow": "#ffca7a"
+      }
+    }
   },
   {
     "id": "republic-day",
@@ -45,7 +75,17 @@
     "themeClass": "theme-republic-day",
     "greeting": "Happy Republic Day",
     "accentEmoji": "🇮🇳",
-    "enabled": true
+    "enabled": true,
+    "gift": {
+      "type": "wrapped",
+      "closingLine": "Here is to unity, purpose and possibility.",
+      "palette": {
+        "body": "#9bd39a",
+        "lid": "#f4f9ff",
+        "ribbon": "#ff9933",
+        "glow": "#b7e5b6"
+      }
+    }
   },
   {
     "id": "christmas",
@@ -57,7 +97,17 @@
     "themeClass": "theme-christmas",
     "greeting": "Merry Christmas",
     "accentEmoji": "🎄",
-    "enabled": true
+    "enabled": true,
+    "gift": {
+      "type": "wrapped",
+      "closingLine": "May your season be warm, calm and bright.",
+      "palette": {
+        "body": "#e56b6f",
+        "lid": "#f4fff8",
+        "ribbon": "#1f7a4d",
+        "glow": "#ffcf70"
+      }
+    }
   },
   {
     "id": "new-year",
@@ -69,6 +119,16 @@
     "themeClass": "theme-new-year",
     "greeting": "Happy New Year",
     "accentEmoji": "🎆",
-    "enabled": true
+    "enabled": true,
+    "gift": {
+      "type": "wrapped",
+      "closingLine": "Here is to a bright year ahead.",
+      "palette": {
+        "body": "#ffd166",
+        "lid": "#f4f6ff",
+        "ribbon": "#ff8fc3",
+        "glow": "#ffd166"
+      }
+    }
   }
 ]

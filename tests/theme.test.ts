@@ -9,18 +9,33 @@ import {
   type ThemeFestivalOption,
 } from "@/lib/theme";
 
+const gift = {
+  type: "wrapped" as const,
+  closingLine: "Wishing you joy.",
+  palette: {
+    body: "#ff9933",
+    lid: "#ffd166",
+    ribbon: "#c92b1d",
+    glow: "#ffb347",
+  },
+};
+
 const festivals: ThemeFestivalOption[] = [
   {
     slug: "diwali",
     name: "Diwali",
     themeClass: "theme-diwali",
     accentEmoji: "🪔",
+    greeting: "Happy Diwali",
+    gift,
   },
   {
     slug: "holi",
     name: "Holi",
     themeClass: "theme-holi",
     accentEmoji: "🎨",
+    greeting: "Happy Holi",
+    gift,
   },
 ];
 

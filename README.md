@@ -33,7 +33,7 @@ npm run format     # Prettier
 
 - `content/profile.json`: contact details are set for Sujal; edit the resume value when ready.
 - `content/projects.json`: optional per-repo overrides keyed by GitHub repo name. Unmatched keys become manual projects.
-- `content/festivals.json`: verify all dates. Diwali and Holi are movable, so add explicit windows for future years or set `recurringYearly` only when the date is fixed.
+- `content/festivals.json`: verify dates, gift closing lines and gift palettes. Diwali and Holi are movable, so add explicit windows for future years or set `recurringYearly` only when the date is fixed.
 - Add `GITHUB_TOKEN` to `.env.local` for higher GitHub API rate limits (optional; the build falls back gracefully).
 - Seed achievements use `"placeholder": true`; they are visible locally but hidden from production builds. Replace them and remove the flag when ready.
 - Put images in `public/uploads` and reference only the filename in content JSON (`"image": "project.png"`).
@@ -51,7 +51,7 @@ Using the files directly:
 - `content/projects.json` — optional overrides keyed by GitHub repo name. Supported: `title`, `description`, `image`, `tags`, `featured`, `status`, `hidden`, plus `repoUrl`, `liveUrl` and `date` for manual projects.
 - Unmatched project keys are rendered as manual projects.
 - `content/achievements.json` — `issuer` is the issuer or event name.
-- `content/festivals.json` — multiple `windows` are supported for movable dates.
+- `content/festivals.json` — multiple `windows` and `gift` blocks (type, closing line, palette) are supported.
 
 Featured projects use `"featured": true` overrides. If none are set, the three most recently pushed repos with descriptions are used.
 
@@ -74,9 +74,18 @@ The GitHub section skips the portfolio's own repo automatically:
 - The switch updates with `history.replaceState` without reloading.
 - `/festival/[slug]` uses its festival theme as the fallback, but the switch can still turn it off; canonical and Open Graph URLs stay clean.
 - Diwali adds a dynamically loaded canvas of floating lanterns: mouse wind, click bursts, a 10-burst firework easter egg and static lanterns under reduced motion. The bundle is not loaded outside Diwali mode.
-- Lantern chimes are on by default; mute with `localStorage.setItem("festival-sound", "off")`.
+- Lantern and gift chimes share one Web Audio master gain. Use the step-one sound choices or `localStorage.setItem("festival-sound", "off")` to mute.
 - Other festivals override CSS variables only.
 - Animations are disabled under `prefers-reduced-motion`.
+
+## Festival splash and gifts
+
+- On the first visit each session with an active festival theme, the splash runs wish → gift → enter. `Skip` and Escape go straight to the site.
+- Step one auto-advances after four seconds or via Continue; it also contains the sound/silent entry choices.
+- Step two waits indefinitely for the gift. Click, tap, Enter or Space opens it; step three shows the festival closing line and the rocket entry.
+- `Replay wish` in the top bar replays all three steps.
+- Gift type, closing line and palette live in each `festivals.json` gift block. Diwali opens into SVG sweets; other festivals use a wrapped box.
+- Shareable gift pages live at `/festival/[slug]/gift?to=<name>`; names are sanitized and the page has a clean canonical URL.
 
 ## Deploying
 

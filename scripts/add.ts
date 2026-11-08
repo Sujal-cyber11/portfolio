@@ -308,6 +308,34 @@ async function buildFestival(): Promise<Festival> {
     required: true,
   });
   const enabled = await askConfirm("Enable this festival?", true);
+  const giftType = await askSelect<Festival["gift"]["type"]>(
+    "Gift type",
+    [
+      { value: "wrapped", label: "Generic wrapped box" },
+      { value: "sweets", label: "Sweets" },
+    ],
+    "wrapped",
+  );
+  const closingLine = await askText("Gift closing line", {
+    defaultValue: `Wishing you joy this ${name}.`,
+    required: true,
+  });
+  const giftBody = await askText("Gift body colour", {
+    defaultValue: "#ff9933",
+    required: true,
+  });
+  const giftLid = await askText("Gift lid colour", {
+    defaultValue: "#ffd166",
+    required: true,
+  });
+  const giftRibbon = await askText("Gift ribbon colour", {
+    defaultValue: "#c92b1d",
+    required: true,
+  });
+  const giftGlow = await askText("Gift glow colour", {
+    defaultValue: "#ffb347",
+    required: true,
+  });
 
   const parsed = festivalSchema.safeParse({
     id,
@@ -320,6 +348,16 @@ async function buildFestival(): Promise<Festival> {
     greeting,
     accentEmoji,
     enabled,
+    gift: {
+      type: giftType,
+      closingLine,
+      palette: {
+        body: giftBody,
+        lid: giftLid,
+        ribbon: giftRibbon,
+        glow: giftGlow,
+      },
+    },
   });
 
   if (!parsed.success) {

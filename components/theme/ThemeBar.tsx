@@ -7,6 +7,7 @@ import {
   getThemeToggleState,
   THEME_DEFAULT,
 } from "@/lib/theme";
+import { SPLASH_REPLAY_EVENT } from "@/lib/splash";
 import { useThemeRuntime } from "./ThemeProvider";
 import {
   getFestivalSlugFromPathname,
@@ -53,24 +54,40 @@ export function ThemeBar() {
   }
 
   return (
-    <div className={styles.bar}>
+    <div className={styles.bar} data-theme-bar>
       <div className={`container ${styles.inner}`}>
-        <button
-          aria-checked={state.checked}
-          aria-label={`Toggle ${festival.name} festival theme`}
-          className={styles.switch}
-          onClick={toggleFestivalTheme}
-          role="switch"
-          type="button"
-        >
-          <span className={styles.label}>
-            {festival.name}{" "}
-            <span aria-hidden="true">{festival.accentEmoji}</span>
-          </span>
-          <span aria-hidden="true" className={styles.track}>
-            <span className={styles.knob} />
-          </span>
-        </button>
+        <div className={styles.controls}>
+          <button
+            className={styles.replay}
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent(SPLASH_REPLAY_EVENT, {
+                  detail: { slug: festival.slug },
+                }),
+              )
+            }
+            type="button"
+          >
+            Replay wish
+          </button>
+
+          <button
+            aria-checked={state.checked}
+            aria-label={`Toggle ${festival.name} festival theme`}
+            className={styles.switch}
+            onClick={toggleFestivalTheme}
+            role="switch"
+            type="button"
+          >
+            <span className={styles.label}>
+              {festival.name}{" "}
+              <span aria-hidden="true">{festival.accentEmoji}</span>
+            </span>
+            <span aria-hidden="true" className={styles.track}>
+              <span className={styles.knob} />
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );

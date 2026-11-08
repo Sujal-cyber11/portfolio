@@ -1,3 +1,5 @@
+import type { FestivalGiftConfig } from "@/lib/schema";
+
 export const THEME_QUERY_PARAM = "theme";
 export const THEME_STORAGE_KEY = "portfolio-theme";
 export const THEME_AUTO = "auto";
@@ -8,6 +10,8 @@ export interface ThemeFestivalOption {
   name: string;
   themeClass: string;
   accentEmoji: string;
+  greeting: string;
+  gift: FestivalGiftConfig;
 }
 
 export type ThemeSource = "url" | "stored" | "page" | "schedule" | "default";

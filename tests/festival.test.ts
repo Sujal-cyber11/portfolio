@@ -13,6 +13,16 @@ function makeFestival(input: FestivalInput): Festival {
     greeting: `Happy ${input.name}`,
     accentEmoji: "*",
     enabled: true,
+    gift: {
+      type: "wrapped",
+      closingLine: "Wishing you joy.",
+      palette: {
+        body: "#ff9933",
+        lid: "#ffd166",
+        ribbon: "#c92b1d",
+        glow: "#ffb347",
+      },
+    },
     ...input,
   };
 }

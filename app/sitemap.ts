@@ -21,10 +21,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    ...getFestivals().map((festival) => ({
-      url: `${siteUrl}/festival/${festival.slug}`,
-      changeFrequency: "yearly" as const,
-      priority: 0.3,
-    })),
+    ...getFestivals().flatMap((festival) => [
+      {
+        url: `${siteUrl}/festival/${festival.slug}`,
+        changeFrequency: "yearly" as const,
+        priority: 0.3,
+      },
+      {
+        url: `${siteUrl}/festival/${festival.slug}/gift`,
+        changeFrequency: "yearly" as const,
+        priority: 0.2,
+      },
+    ]),
   ];
 }

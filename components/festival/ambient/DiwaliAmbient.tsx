@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { playFestivalChime } from "@/components/festival/audio/festival-audio";
 import {
   getWindForce,
   isInteractivePointerTarget,
@@ -51,7 +52,6 @@ interface Firework {
 const MAX_SPARKS = 320;
 const WIND_RADIUS = 120;
 const LANTERN_TOLERANCE = 10;
-const SOUND_STORAGE_KEY = "festival-sound";
 const BURST_COLORS = ["#ffd166", "#ffb347", "#ff7a2f", "#ff4d2e"];
 const FIREWORK_COLORS = ["#ffd166", "#ffb347", "#ff7a2f", "#ff4d2e"];
 
@@ -148,14 +148,6 @@ function drawLantern(
   context.restore();
 }
 
-function festivalSoundEnabled(): boolean {
-  try {
-    return window.localStorage.getItem(SOUND_STORAGE_KEY) !== "off";
-  } catch {
-    return true;
-  }
-}
-
 export function DiwaliAmbient() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
@@ -186,7 +178,6 @@ export function DiwaliAmbient() {
     const sparks: Spark[] = [];
     const fireworks: Firework[] = [];
     const replacementTimers = new Set<number>();
-    const chimeTimes: number[] = [];
     let burstCount = 0;
     let toastTimer = 0;
     let rafId = 0;
@@ -198,8 +189,6 @@ export function DiwaliAmbient() {
     let pointerOverInteractive = false;
     let cursorOverridden = false;
     let previousCursor = "";
-    let audioContext: AudioContext | null = null;
-    let masterGain: GainNode | null = null;
 
     function resizeCanvas(): void {
       devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -342,77 +331,6 @@ export function DiwaliAmbient() {
       }
     }
 
-    function getMasterGain(): GainNode | null {
-      if (!festivalSoundEnabled()) {
-        return null;
-      }
-
-      try {
-        const AudioConstructor =
-          window.AudioContext ??
-          (
-            window as typeof window & {
-              webkitAudioContext?: typeof AudioContext;
-            }
-          ).webkitAudioContext;
-
-        if (!AudioConstructor) {
-          return null;
-        }
-
-        if (!audioContext) {
-          audioContext = new AudioConstructor();
-          masterGain = audioContext.createGain();
-          masterGain.gain.value = 0.14;
-          masterGain.connect(audioContext.destination);
-        }
-
-        if (audioContext.state === "suspended") {
-          void audioContext.resume().catch(() => undefined);
-        }
-
-        return masterGain;
-      } catch {
-        return null;
-      }
-    }
-
-    function playChime(): void {
-      const gainTarget = getMasterGain();
-
-      if (!gainTarget || !audioContext) {
-        return;
-      }
-
-      const now = performance.now();
-      const recent = chimeTimes.filter((time) => now - time < 1000);
-      chimeTimes.length = 0;
-      chimeTimes.push(...recent);
-
-      if (chimeTimes.length >= 4) {
-        return;
-      }
-
-      chimeTimes.push(now);
-
-      const oscillator = audioContext.createOscillator();
-      const chimeGain = audioContext.createGain();
-      const start = audioContext.currentTime;
-
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(720 + Math.random() * 180, start);
-      oscillator.frequency.exponentialRampToValueAtTime(
-        1180 + Math.random() * 220,
-        start + 0.12,
-      );
-      chimeGain.gain.setValueAtTime(0.0001, start);
-      chimeGain.gain.exponentialRampToValueAtTime(0.26, start + 0.02);
-      chimeGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.55);
-      oscillator.connect(chimeGain).connect(gainTarget);
-      oscillator.start(start);
-      oscillator.stop(start + 0.6);
-    }
-
     function queueEasterEgg(): void {
       for (let index = 0; index < 6; index += 1) {
         fireworks.push({
@@ -444,7 +362,7 @@ export function DiwaliAmbient() {
         0.95,
         380,
       );
-      playChime();
+      playFestivalChime();
 
       const result = recordLanternBurst(burstCount);
       burstCount = result.count;
@@ -737,10 +655,6 @@ export function DiwaliAmbient() {
       }
 
       setPointerCursor(false);
-
-      if (audioContext && audioContext.state !== "closed") {
-        void audioContext.close().catch(() => undefined);
-      }
     };
   }, []);
 

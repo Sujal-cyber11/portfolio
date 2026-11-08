@@ -84,6 +84,23 @@ export const festivalWindowSchema = z
   })
   .strict();
 
+export const festivalGiftPaletteSchema = z
+  .object({
+    body: z.string().trim().min(1),
+    lid: z.string().trim().min(1),
+    ribbon: z.string().trim().min(1),
+    glow: z.string().trim().min(1),
+  })
+  .strict();
+
+export const festivalGiftSchema = z
+  .object({
+    type: z.enum(["sweets", "wrapped"]),
+    closingLine: z.string().trim().min(1),
+    palette: festivalGiftPaletteSchema,
+  })
+  .strict();
+
 export const festivalSchema = z
   .object({
     id: slug,
@@ -96,6 +113,7 @@ export const festivalSchema = z
     greeting: z.string().trim().min(1),
     accentEmoji: z.string().trim().min(1),
     enabled: z.boolean(),
+    gift: festivalGiftSchema,
   })
   .strict();
 
@@ -114,4 +132,6 @@ export type ProjectOverrides = z.infer<typeof projectOverridesSchema>;
 export type AchievementCategory = z.infer<typeof achievementCategorySchema>;
 export type Achievement = z.infer<typeof achievementSchema>;
 export type FestivalWindow = z.infer<typeof festivalWindowSchema>;
+export type FestivalGiftPalette = z.infer<typeof festivalGiftPaletteSchema>;
+export type FestivalGiftConfig = z.infer<typeof festivalGiftSchema>;
 export type Festival = z.infer<typeof festivalSchema>;

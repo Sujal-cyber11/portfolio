@@ -6,6 +6,7 @@ import { ThemeScript } from "@/components/festival/ThemeScript";
 import { NeuronBackdrop } from "@/components/layout/NeuronBackdrop";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { FestivalSplashHost } from "@/components/festival/splash/FestivalSplashHost";
 import { ThemeBar } from "@/components/theme/ThemeBar";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ThemeSync } from "@/components/theme/ThemeSync";
@@ -56,6 +57,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       name: festival.name,
       themeClass: festival.themeClass,
       accentEmoji: festival.accentEmoji,
+      greeting: festival.greeting,
+      gift: festival.gift,
     }),
   );
   const scheduledFestival = await getCurrentFestival();
@@ -65,6 +68,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         name: scheduledFestival.name,
         themeClass: scheduledFestival.themeClass,
         accentEmoji: scheduledFestival.accentEmoji,
+        greeting: scheduledFestival.greeting,
+        gift: scheduledFestival.gift,
       }
     : null;
   const serverTheme = resolveTheme({
@@ -99,6 +104,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider festivals={festivalOptions} scheduled={scheduled}>
           <ThemeBar />
           <ThemeSync />
+          <FestivalSplashHost profileName={profile.name} />
           <div className="site-frame">
             <SiteHeader profile={profile} />
             <main className="site-main" id="main">
