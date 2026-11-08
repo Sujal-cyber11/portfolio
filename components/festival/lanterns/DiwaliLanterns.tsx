@@ -10,11 +10,21 @@ interface Lantern {
   height: number;
   depth: number;
   speed: number;
+  offsetX: number;
+  offsetY: number;
+  velocityX: number;
+  velocityY: number;
   renderX: number;
   renderY: number;
 }
 
 const MAX_DELTA_SECONDS = 1 / 30;
+const REPULSION_RADIUS = 110;
+const MAX_OFFSET = 22;
+const MAX_REPULSION_SPEED = 34;
+const REPULSION_ACCELERATION = 150;
+const RETURN_SPRING = 12;
+const VELOCITY_DAMPING = 0.84;
 
 function drawLantern(
   context: CanvasRenderingContext2D,
@@ -139,6 +149,10 @@ export function DiwaliLanterns() {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const finePointer = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
+    const pointer = { x: 0, y: 0, active: false };
     let width = 0;
     let height = 0;
     let devicePixelRatio = 1;
@@ -176,6 +190,10 @@ export function DiwaliLanterns() {
         height: lanternHeight,
         depth,
         speed: 6 + depth * 13,
+        offsetX: 0,
+        offsetY: 0,
+        velocityX: 0,
+        velocityY: 0,
         renderX: baseX,
         renderY: y,
       };
@@ -217,6 +235,10 @@ export function DiwaliLanterns() {
           height: lanternHeight,
           depth,
           speed: 0,
+          offsetX: 0,
+          offsetY: 0,
+          velocityX: 0,
+          velocityY: 0,
           renderX: width * xRatio,
           renderY: height * yRatio,
         };
@@ -252,10 +274,55 @@ export function DiwaliLanterns() {
       );
       lastFrame = time;
 
+      const damping = Math.pow(VELOCITY_DAMPING, delta * 60);
+
       for (const lantern of lanterns) {
+        const centerX = lantern.baseX + lantern.offsetX;
+        const centerY = lantern.y + lantern.offsetY;
+
+        if (finePointer && pointer.active) {
+          const dx = centerX - pointer.x;
+          const dy = centerY - pointer.y;
+          const distance = Math.hypot(dx, dy);
+
+          if (distance > 1 && distance < REPULSION_RADIUS) {
+            const falloff = 1 - distance / REPULSION_RADIUS;
+            const force = falloff * falloff * REPULSION_ACCELERATION;
+
+            lantern.velocityX += (dx / distance) * force * delta;
+            lantern.velocityY += (dy / distance) * force * delta;
+          }
+        }
+
+        lantern.velocityX += -lantern.offsetX * RETURN_SPRING * delta;
+        lantern.velocityY += -lantern.offsetY * RETURN_SPRING * delta;
+        lantern.velocityX *= damping;
+        lantern.velocityY *= damping;
+
+        const speed = Math.hypot(lantern.velocityX, lantern.velocityY);
+
+        if (speed > MAX_REPULSION_SPEED) {
+          const scale = MAX_REPULSION_SPEED / speed;
+          lantern.velocityX *= scale;
+          lantern.velocityY *= scale;
+        }
+
+        lantern.offsetX += lantern.velocityX * delta;
+        lantern.offsetY += lantern.velocityY * delta;
+
+        const offsetDistance = Math.hypot(lantern.offsetX, lantern.offsetY);
+
+        if (offsetDistance > MAX_OFFSET) {
+          const scale = MAX_OFFSET / offsetDistance;
+          lantern.offsetX *= scale;
+          lantern.offsetY *= scale;
+          lantern.velocityX *= 0.8;
+          lantern.velocityY *= 0.8;
+        }
+
         lantern.y -= lantern.speed * delta;
-        lantern.renderX = lantern.baseX;
-        lantern.renderY = lantern.y;
+        lantern.renderX = lantern.baseX + lantern.offsetX;
+        lantern.renderY = lantern.y + lantern.offsetY;
 
         if (lantern.renderY < -lantern.height * 1.5) {
           resetLantern(lantern);
@@ -271,6 +338,26 @@ export function DiwaliLanterns() {
         stop();
       } else {
         start();
+      }
+    }
+
+    function handlePointerMove(event: PointerEvent): void {
+      if (!finePointer) {
+        return;
+      }
+
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      pointer.active = true;
+    }
+
+    function handlePointerLeave(): void {
+      pointer.active = false;
+    }
+
+    function handleMouseOut(event: MouseEvent): void {
+      if (!event.relatedTarget) {
+        handlePointerLeave();
       }
     }
 
@@ -296,12 +383,20 @@ export function DiwaliLanterns() {
 
     lanterns = Array.from({ length: targetCount() }, () => createLantern());
     window.addEventListener("resize", handleResize);
+    window.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+    window.addEventListener("mouseout", handleMouseOut);
+    window.addEventListener("blur", handlePointerLeave);
     document.addEventListener("visibilitychange", handleVisibility);
     start();
 
     return () => {
       stop();
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("mouseout", handleMouseOut);
+      window.removeEventListener("blur", handlePointerLeave);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
