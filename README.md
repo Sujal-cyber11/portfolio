@@ -9,7 +9,7 @@ A responsive, terminal-inspired portfolio built with Next.js App Router, TypeScr
 - Plain CSS: one globals file, shared layout CSS, CSS Modules per section
 - Zod schemas for all content
 - Vitest for unit tests
-- Vercel-friendly build-time GitHub enrichment
+- GitHub-backed projects and repositories with hourly revalidation
 
 ## Run it
 
@@ -31,10 +31,11 @@ npm run format     # Prettier
 
 ## What to fill in or verify
 
-- `content/profile.json`: edit the clearly named email, LinkedIn and resume values. `githubUsername` is set to `Sujal-cyber11`.
+- `content/profile.json`: contact details are set for Sujal; edit the resume value when ready.
+- `content/projects.json`: optional per-repo overrides keyed by GitHub repo name. Unmatched keys become manual projects.
 - `content/festivals.json`: verify all dates. Diwali and Holi are movable, so add explicit windows for future years or set `recurringYearly` only when the date is fixed.
-- Add `GITHUB_TOKEN` to `.env.local` for higher GitHub API rate limits (optional; the build falls back to local content on failure).
-- Seed projects and achievements use `"placeholder": true`; they are visible locally but hidden from production builds. Replace them and remove the flag when ready.
+- Add `GITHUB_TOKEN` to `.env.local` for higher GitHub API rate limits (optional; the build falls back gracefully).
+- Seed achievements use `"placeholder": true`; they are visible locally but hidden from production builds. Replace them and remove the flag when ready.
 - Put images in `public/uploads` and reference only the filename in content JSON (`"image": "project.png"`).
 - `reference/README.md` is where Pinterest screenshots will go later.
 
@@ -43,15 +44,16 @@ npm run format     # Prettier
 1. Run `npm run add` and choose project, achievement or festival.
 2. Answer the prompts. Optional fields can be left blank.
 3. The CLI validates with the same Zod schemas as the site and writes the file for you.
-4. Projects and achievements are appended and sorted newest first.
+4. Projects are written as repo-keyed overrides; achievements are appended newest first.
 
 Using the files directly:
 
-- `content/projects.json` — `description` and `tags` may be blank when `repoUrl` is set; GitHub fills them from the repo if available.
+- `content/projects.json` — optional overrides keyed by GitHub repo name. Supported: `title`, `description`, `image`, `tags`, `featured`, `status`, `hidden`, plus `repoUrl`, `liveUrl` and `date` for manual projects.
+- Unmatched project keys are rendered as manual projects.
 - `content/achievements.json` — `issuer` is the issuer or event name.
 - `content/festivals.json` — multiple `windows` are supported for movable dates.
 
-Uploads live in `public/uploads`; reference the bare filename only.
+Featured projects use `"featured": true` overrides. If none are set, the three most recently pushed repos with descriptions are used.
 
 ### Excluding repositories
 
@@ -64,13 +66,13 @@ The GitHub section skips the portfolio's own repo automatically:
 
 ## Themes
 
-- The default look is a near-black terminal theme with JetBrains Mono headings, green accents, a grid and subtle scanlines.
-- A slim top-bar switch appears only when a festival is scheduled today or `?theme=<slug>` previews one.
+- The default look is a near-black terminal theme with JetBrains Mono headings, neon-green accents, a neural-network backdrop, a grid and subtle scanlines.
+- A slim top-bar switch appears when a festival is scheduled, a festival page is open, or `?theme=<slug>` previews one.
 - Turning it on applies the festival theme (`?theme=<slug>`); turning it off uses the default theme (`?theme=off`).
-- Resolution order is URL param, saved choice in `localStorage`, scheduled festival, then default. Unknown URL slugs are ignored.
+- Resolution order is URL param, saved choice in `localStorage`, page festival, scheduled festival, then default. Unknown URL slugs are ignored.
 - Internal links preserve a manual `?theme` through `ThemedLink`.
 - The switch updates with `history.replaceState` without reloading.
-- `/festival/[slug]` forces its theme; canonical and Open Graph URLs stay clean.
+- `/festival/[slug]` uses its festival theme as the fallback, but the switch can still turn it off; canonical and Open Graph URLs stay clean.
 - Diwali has the full warm-gold treatment and decorative diyas. Other festivals override CSS variables only.
 - Animations are disabled under `prefers-reduced-motion`.
 

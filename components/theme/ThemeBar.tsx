@@ -1,9 +1,15 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
-import { getThemeToggleState, THEME_DEFAULT } from "@/lib/theme";
+import {
+  findThemeFestival,
+  getThemeToggleState,
+  THEME_DEFAULT,
+} from "@/lib/theme";
 import { useThemeRuntime } from "./ThemeProvider";
 import {
+  getFestivalSlugFromPathname,
   getStoredThemeChoice,
   getUrlThemeParam,
   selectThemeChoice,
@@ -13,6 +19,11 @@ import styles from "./ThemeBar.module.css";
 
 export function ThemeBar() {
   const runtime = useThemeRuntime();
+  const pathname = usePathname();
+  const pageFestival = findThemeFestival(
+    runtime.festivals,
+    getFestivalSlugFromPathname(pathname),
+  );
   const urlParam = useSyncExternalStore(
     subscribeThemeChanges,
     getUrlThemeParam,
@@ -27,6 +38,7 @@ export function ThemeBar() {
     urlParam,
     storedChoice,
     scheduled: runtime.scheduled,
+    pageFestival,
     festivals: runtime.festivals,
   });
 

@@ -17,11 +17,12 @@ import {
   achievementsSchema,
   festivalSchema,
   festivalsSchema,
-  projectSchema,
-  projectsSchema,
+  projectOverrideSchema,
+  projectOverridesSchema,
   type Achievement,
   type Festival,
-  type Project,
+  type ProjectOverride,
+  type ProjectStatus,
 } from "../lib/schema";
 
 type ContentKind = "project" | "achievement" | "festival";
@@ -161,52 +162,56 @@ async function writeEntries(fileName: string, entries: unknown): Promise<void> {
   );
 }
 
-async function buildProject(): Promise<Project> {
-  const title = await askText("Project title", { required: true });
-  const id = await askText("Project id (slug)", {
-    defaultValue: slugify(title),
+async function buildProject(): Promise<{
+  key: string;
+  override: ProjectOverride;
+}> {
+  const key = await askText("GitHub repo name (or manual project key)", {
     required: true,
   });
-  const description = await askText(
-    "Description (leave blank to fill from GitHub)",
+  const title = await askText("Title override (optional)");
+  const description = await askText("Description override (optional)");
+  const tags = splitList(
+    await askText("Tags override (comma-separated, optional)"),
   );
-  const tags = splitList(await askText("Tags (comma-separated, optional)"));
-  const repoUrl = await askText("Repository URL (optional, GitHub supported)");
-  const liveUrl = await askText("Live URL (optional)");
   const image = await askText("Image filename in /public/uploads (optional)");
+  const repoUrl = await askText(
+    "Repository URL (manual projects only, optional)",
+  );
+  const liveUrl = await askText("Live URL (manual projects only, optional)");
+  const date = await askText(
+    "Date override (manual projects only, YYYY-MM-DD, optional)",
+  );
   const featured = await askConfirm("Feature this project?", false);
-  const date = await askText("Date (YYYY-MM-DD)", {
-    defaultValue: today(),
-    required: true,
-  });
-  const status = await askSelect<Project["status"]>(
+  const status = await askSelect<ProjectStatus>(
     "Project status",
     [
       { value: "building", label: "Building" },
       { value: "done", label: "Done" },
       { value: "archived", label: "Archived" },
     ],
-    "building",
+    "done",
   );
+  const hidden = await askConfirm("Hide this project?", false);
 
-  const parsed = projectSchema.safeParse({
-    id,
-    title,
-    description,
-    tags,
-    featured,
-    date,
-    status,
+  const parsed = projectOverrideSchema.safeParse({
+    ...(title ? { title } : {}),
+    ...(description ? { description } : {}),
+    ...(tags.length > 0 ? { tags } : {}),
+    ...(image ? { image } : {}),
     ...(repoUrl ? { repoUrl } : {}),
     ...(liveUrl ? { liveUrl } : {}),
-    ...(image ? { image } : {}),
+    ...(date ? { date } : {}),
+    featured,
+    status,
+    hidden,
   });
 
   if (!parsed.success) {
-    failure(`Invalid project:\n${formatIssues(parsed.error)}`);
+    failure(`Invalid project override:\n${formatIssues(parsed.error)}`);
   }
 
-  return parsed.data;
+  return { key, override: parsed.data };
 }
 
 async function buildAchievement(): Promise<Achievement> {
@@ -331,16 +336,21 @@ function ensureUnique(entries: { id: string }[], item: { id: string }): void {
 }
 
 async function addProject(): Promise<void> {
-  const entries = await readEntries("projects.json", projectsSchema);
-  const project = await buildProject();
-  ensureUnique(entries, project);
+  const entries = await readEntries("projects.json", projectOverridesSchema);
+  const { key, override } = await buildProject();
 
-  const next = [...entries, project].sort((a, b) =>
-    b.date.localeCompare(a.date),
+  if (Object.prototype.hasOwnProperty.call(entries, key)) {
+    failure(`An entry for "${key}" already exists.`);
+  }
+
+  const next = Object.fromEntries(
+    Object.entries({ ...entries, [key]: override }).sort(([a], [b]) =>
+      a.localeCompare(b),
+    ),
   );
 
   await writeEntries("projects.json", next);
-  outro(`Added project "${project.title}".`);
+  outro(`Added project override for "${key}".`);
 }
 
 async function addAchievement(): Promise<void> {

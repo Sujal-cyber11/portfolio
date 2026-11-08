@@ -89,16 +89,11 @@ export function applyResolvedTheme(
     ? getFestivalSlugFromPathname(pathname)
     : getFestivalSlugFromPath();
   const pageFestival = findThemeFestival(runtime.festivals, pathSlug);
-
-  if (pageFestival) {
-    applyThemeClass(pageFestival.themeClass);
-    return;
-  }
-
   const resolved = resolveTheme({
     urlParam,
     storedChoice,
     scheduled: runtime.scheduled,
+    pageFestival,
     festivals: runtime.festivals,
   });
 

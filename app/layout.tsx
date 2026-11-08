@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { FestivalDecorations } from "@/components/festival/FestivalDecorations";
 import { ThemeScript } from "@/components/festival/ThemeScript";
+import { NeuronBackdrop } from "@/components/layout/NeuronBackdrop";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ThemeBar } from "@/components/theme/ThemeBar";
@@ -91,6 +92,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <a className="skip-link" href="#main">
           Skip to content
         </a>
+        <NeuronBackdrop />
         <FestivalDecorations />
         <ThemeProvider festivals={festivalOptions} scheduled={scheduled}>
           <ThemeBar />

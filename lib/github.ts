@@ -1,5 +1,5 @@
 import { cacheLife } from "next/cache";
-import type { Profile, Project } from "@/lib/schema";
+import type { Profile } from "@/lib/schema";
 import { filterRepos } from "@/lib/repo-filter";
 
 const GITHUB_API = "https://api.github.com";
@@ -8,25 +8,15 @@ export interface RepoSummary {
   name: string;
   description: string | null;
   url: string;
+  homepage: string | null;
   stars: number;
   forks: number;
   language: string | null;
   topics: string[];
   updatedAt: string;
+  pushedAt: string;
   fork: boolean;
   archived: boolean;
-}
-
-export interface RepoMeta {
-  name: string;
-  description: string | null;
-  stars: number;
-  language: string | null;
-  topics: string[];
-}
-
-export interface ProjectView extends Project {
-  repoMeta: RepoMeta | null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -35,6 +25,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function stringOrNull(value: unknown): string | null {
   return typeof value === "string" ? value : null;
+}
+
+function nonEmptyStringOrNull(value: unknown): string | null {
+  const text = stringOrNull(value)?.trim();
+  return text ? text : null;
 }
 
 function stringArray(value: unknown): string[] {
@@ -84,45 +79,6 @@ async function fetchGitHubData(url: string): Promise<unknown | null> {
   }
 }
 
-function parseGitHubRepoUrl(
-  repoUrl: string,
-): { owner: string; repo: string } | null {
-  try {
-    const url = new URL(repoUrl);
-
-    if (url.hostname.toLowerCase() !== "github.com") {
-      return null;
-    }
-
-    const [owner, rawRepo] = url.pathname.split("/").filter(Boolean);
-
-    if (!owner || !rawRepo) {
-      return null;
-    }
-
-    return {
-      owner,
-      repo: rawRepo.replace(/\.git$/i, ""),
-    };
-  } catch {
-    return null;
-  }
-}
-
-function toRepoMeta(value: unknown): RepoMeta | null {
-  if (!isRecord(value) || typeof value.name !== "string") {
-    return null;
-  }
-
-  return {
-    name: value.name,
-    description: stringOrNull(value.description),
-    stars: numberOrZero(value.stargazers_count),
-    language: stringOrNull(value.language),
-    topics: stringArray(value.topics),
-  };
-}
-
 function toRepoSummary(value: unknown): RepoSummary | null {
   if (
     !isRecord(value) ||
@@ -138,58 +94,21 @@ function toRepoSummary(value: unknown): RepoSummary | null {
     name: value.name,
     description: stringOrNull(value.description),
     url: value.html_url,
+    homepage: nonEmptyStringOrNull(value.homepage),
     stars: numberOrZero(value.stargazers_count),
     forks: numberOrZero(value.forks_count),
     language: stringOrNull(value.language),
     topics: stringArray(value.topics),
     updatedAt: stringOrNull(value.updated_at) ?? "",
+    pushedAt: stringOrNull(value.pushed_at) ?? "",
     fork: value.fork,
     archived: value.archived,
   };
 }
 
-export async function getRepoMeta(repoUrl: string): Promise<RepoMeta | null> {
-  "use cache";
-  cacheLife("hours");
-
-  const parsed = parseGitHubRepoUrl(repoUrl);
-
-  if (!parsed) {
-    return null;
-  }
-
-  const data = await fetchGitHubData(
-    `${GITHUB_API}/repos/${encodeURIComponent(parsed.owner)}/${encodeURIComponent(parsed.repo)}`,
-  );
-
-  return data ? toRepoMeta(data) : null;
-}
-
-export async function enrichProjects(
-  projects: Project[],
-): Promise<ProjectView[]> {
-  return Promise.all(
-    projects.map(async (project) => {
-      const repoMeta = project.repoUrl
-        ? await getRepoMeta(project.repoUrl)
-        : null;
-
-      if (!repoMeta) {
-        return { ...project, repoMeta };
-      }
-
-      return {
-        ...project,
-        description: project.description || repoMeta.description || "",
-        tags:
-          project.tags.length > 0 ? project.tags : repoMeta.topics.slice(0, 4),
-        repoMeta,
-      };
-    }),
-  );
-}
-
-export async function getPublicRepos(profile: Profile): Promise<RepoSummary[]> {
+export async function getAllPublicRepos(
+  profile: Profile,
+): Promise<RepoSummary[]> {
   "use cache";
   cacheLife("hours");
 
@@ -207,9 +126,13 @@ export async function getPublicRepos(profile: Profile): Promise<RepoSummary[]> {
     return [];
   }
 
-  const repos = data
+  return data
     .map((entry) => toRepoSummary(entry))
     .filter((repo): repo is RepoSummary => repo !== null);
+}
+
+export async function getPublicRepos(profile: Profile): Promise<RepoSummary[]> {
+  const repos = await getAllPublicRepos(profile);
   const ownRepoSlugs = [
     process.env.VERCEL_GIT_REPO_SLUG,
     process.env.GITHUB_REPO,

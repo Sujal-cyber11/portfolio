@@ -142,6 +142,43 @@ describe("resolveTheme", () => {
     expect(resolved.slug).toBe("holi");
     expect(resolved.source).toBe("schedule");
   });
+
+  it("uses the page festival when nothing overrides it", () => {
+    const resolved = resolveTheme({
+      urlParam: null,
+      storedChoice: null,
+      scheduled,
+      pageFestival: festivals[0],
+      festivals,
+    });
+
+    expect(resolved).toMatchObject({
+      slug: "diwali",
+      source: "page",
+    });
+  });
+
+  it("lets URL off and saved off disable a page festival", () => {
+    expect(
+      resolveTheme({
+        urlParam: THEME_DEFAULT,
+        storedChoice: null,
+        scheduled: null,
+        pageFestival: festivals[0],
+        festivals,
+      }).themeClass,
+    ).toBeNull();
+
+    expect(
+      resolveTheme({
+        urlParam: null,
+        storedChoice: THEME_DEFAULT,
+        scheduled: null,
+        pageFestival: festivals[0],
+        festivals,
+      }).themeClass,
+    ).toBeNull();
+  });
 });
 
 describe("getThemeToggleState", () => {
@@ -245,6 +282,32 @@ describe("getThemeToggleState", () => {
     });
 
     expect(state.visible).toBe(false);
+  });
+
+  it("shows the toggle on a festival page and allows turning it off", () => {
+    const on = getThemeToggleState({
+      urlParam: null,
+      storedChoice: null,
+      scheduled: null,
+      pageFestival: festivals[0],
+      festivals,
+    });
+
+    expect(on.visible).toBe(true);
+    expect(on.checked).toBe(true);
+    expect(on.festival?.slug).toBe("diwali");
+
+    const off = getThemeToggleState({
+      urlParam: THEME_DEFAULT,
+      storedChoice: null,
+      scheduled: null,
+      pageFestival: festivals[0],
+      festivals,
+    });
+
+    expect(off.visible).toBe(true);
+    expect(off.checked).toBe(false);
+    expect(off.festival?.slug).toBe("diwali");
   });
 });
 

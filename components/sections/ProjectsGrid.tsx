@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ThemedLink } from "@/components/theme/ThemedLink";
 import { formatMonthYear } from "@/lib/format";
-import type { ProjectView } from "@/lib/github";
+import type { ProjectView } from "@/lib/projects";
 import type { ProjectStatus } from "@/lib/schema";
 import styles from "./ProjectsGrid.module.css";
 
@@ -79,9 +79,9 @@ export function ProjectsGrid({
                     </time>
                   </div>
 
-                  <p className={styles.description}>
-                    {project.description || "Description coming soon."}
-                  </p>
+                  {project.description ? (
+                    <p className={styles.description}>{project.description}</p>
+                  ) : null}
 
                   {project.tags.length > 0 ? (
                     <ul className={styles.tags} aria-label="Tags">
@@ -91,12 +91,13 @@ export function ProjectsGrid({
                     </ul>
                   ) : null}
 
-                  {project.repoMeta ? (
+                  {project.stars !== null || project.language !== null ? (
                     <p className={styles.repoMeta}>
-                      <span>{project.repoMeta.name}</span>
-                      <span>{project.repoMeta.stars} stars</span>
-                      {project.repoMeta.language ? (
-                        <span>{project.repoMeta.language}</span>
+                      {project.stars !== null ? (
+                        <span>{project.stars} stars</span>
+                      ) : null}
+                      {project.language ? (
+                        <span>{project.language}</span>
                       ) : null}
                     </p>
                   ) : null}

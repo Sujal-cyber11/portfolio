@@ -10,7 +10,7 @@ export interface ThemeFestivalOption {
   accentEmoji: string;
 }
 
-export type ThemeSource = "url" | "stored" | "schedule" | "default";
+export type ThemeSource = "url" | "stored" | "page" | "schedule" | "default";
 
 export interface ResolvedTheme {
   themeClass: string | null;
@@ -23,6 +23,7 @@ export interface ResolveThemeInput {
   urlParam: string | null;
   storedChoice: string | null;
   scheduled: ThemeFestivalOption | null;
+  pageFestival?: ThemeFestivalOption | null;
   festivals: readonly ThemeFestivalOption[];
 }
 
@@ -52,6 +53,7 @@ export function resolveTheme({
   urlParam,
   storedChoice,
   scheduled,
+  pageFestival = null,
   festivals,
 }: ResolveThemeInput): ResolvedTheme {
   if (urlParam === THEME_DEFAULT) {
@@ -94,6 +96,15 @@ export function resolveTheme({
     };
   }
 
+  if (pageFestival) {
+    return {
+      themeClass: pageFestival.themeClass,
+      slug: pageFestival.slug,
+      source: "page",
+      choice: pageFestival.slug,
+    };
+  }
+
   if (scheduled) {
     return {
       themeClass: scheduled.themeClass,
@@ -115,11 +126,12 @@ export function getThemeToggleState({
   urlParam,
   storedChoice,
   scheduled,
+  pageFestival = null,
   festivals,
 }: ResolveThemeInput): ThemeToggleState {
   const previewFestival = findThemeFestival(festivals, urlParam);
 
-  if (!previewFestival && !scheduled) {
+  if (!previewFestival && !pageFestival && !scheduled) {
     return {
       visible: false,
       festival: null,
@@ -131,10 +143,12 @@ export function getThemeToggleState({
     urlParam,
     storedChoice,
     scheduled,
+    pageFestival,
     festivals,
   });
   const resolvedFestival = findThemeFestival(festivals, resolved.slug);
-  const festival = resolvedFestival ?? previewFestival ?? scheduled;
+  const festival =
+    resolvedFestival ?? previewFestival ?? pageFestival ?? scheduled;
 
   if (!festival) {
     return {

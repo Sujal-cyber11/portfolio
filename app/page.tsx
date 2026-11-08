@@ -5,12 +5,9 @@ import { Hero } from "@/components/sections/Hero";
 import { ProjectsGrid } from "@/components/sections/ProjectsGrid";
 import { RepoList } from "@/components/sections/RepoList";
 import { Skills } from "@/components/sections/Skills";
-import {
-  getFeaturedProjects,
-  getLatestAchievements,
-  getProfile,
-} from "@/lib/content";
-import { enrichProjects, getPublicRepos } from "@/lib/github";
+import { getLatestAchievements, getProfile } from "@/lib/content";
+import { getPublicRepos } from "@/lib/github";
+import { getProjects, selectFeaturedProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   alternates: {
@@ -20,10 +17,11 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const profile = getProfile();
-  const [featuredProjects, repos] = await Promise.all([
-    enrichProjects(getFeaturedProjects()),
+  const [projects, repos] = await Promise.all([
+    getProjects(profile),
     getPublicRepos(profile),
   ]);
+  const featuredProjects = selectFeaturedProjects(projects);
   const latestAchievements = getLatestAchievements(2);
 
   return (

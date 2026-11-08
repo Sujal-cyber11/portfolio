@@ -41,19 +41,18 @@ export const profileSchema = z
 
 export const projectStatusSchema = z.enum(["building", "done", "archived"]);
 
-export const projectSchema = z
+export const projectOverrideSchema = z
   .object({
-    id: slug,
-    title: z.string().trim().min(1),
-    description: z.string().trim(),
-    tags: z.array(z.string().trim().min(1)),
+    title: z.string().trim().min(1).optional(),
+    description: z.string().trim().optional(),
+    image: uploadFilename.optional(),
+    tags: z.array(z.string().trim().min(1)).optional(),
+    featured: z.boolean().optional(),
+    status: projectStatusSchema.optional(),
+    hidden: z.boolean().optional(),
     repoUrl: z.url().optional(),
     liveUrl: z.url().optional(),
-    image: uploadFilename.optional(),
-    featured: z.boolean(),
-    date: isoDate,
-    status: projectStatusSchema,
-    placeholder: z.boolean().optional(),
+    date: isoDate.optional(),
   })
   .strict();
 
@@ -100,14 +99,18 @@ export const festivalSchema = z
   })
   .strict();
 
-export const projectsSchema = z.array(projectSchema);
+export const projectOverridesSchema = z.record(
+  z.string().trim().min(1),
+  projectOverrideSchema,
+);
 export const achievementsSchema = z.array(achievementSchema);
 export const festivalsSchema = z.array(festivalSchema);
 
 export type Social = z.infer<typeof socialSchema>;
 export type Profile = z.infer<typeof profileSchema>;
 export type ProjectStatus = z.infer<typeof projectStatusSchema>;
-export type Project = z.infer<typeof projectSchema>;
+export type ProjectOverride = z.infer<typeof projectOverrideSchema>;
+export type ProjectOverrides = z.infer<typeof projectOverridesSchema>;
 export type AchievementCategory = z.infer<typeof achievementCategorySchema>;
 export type Achievement = z.infer<typeof achievementSchema>;
 export type FestivalWindow = z.infer<typeof festivalWindowSchema>;

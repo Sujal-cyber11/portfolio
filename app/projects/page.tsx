@@ -1,6 +1,6 @@
 import { ProjectsGrid } from "@/components/sections/ProjectsGrid";
-import { getProjects } from "@/lib/content";
-import { enrichProjects } from "@/lib/github";
+import { getProfile } from "@/lib/content";
+import { getProjects } from "@/lib/projects";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
@@ -11,7 +11,8 @@ export const metadata = buildPageMetadata({
 });
 
 export default async function ProjectsPage() {
-  const projects = await enrichProjects(getProjects());
+  const profile = getProfile();
+  const projects = await getProjects(profile);
 
   return (
     <>

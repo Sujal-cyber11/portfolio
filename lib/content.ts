@@ -10,11 +10,11 @@ import {
   achievementsSchema,
   festivalsSchema,
   profileSchema,
-  projectsSchema,
+  projectOverridesSchema,
   type Achievement,
   type Festival,
   type Profile,
-  type Project,
+  type ProjectOverrides,
 } from "@/lib/schema";
 
 function formatPath(path: ReadonlyArray<PropertyKey>): string {
@@ -77,9 +77,9 @@ const profile: Profile = loadContent(
   profileSchema,
   profileJson,
 );
-const projects: Project[] = loadContent(
+const projectOverrides: ProjectOverrides = loadContent(
   "content/projects.json",
-  projectsSchema,
+  projectOverridesSchema,
   projectsJson,
 );
 const achievements: Achievement[] = loadContent(
@@ -94,7 +94,6 @@ const festivals: Festival[] = loadContent(
 );
 
 const isProduction = process.env.NODE_ENV === "production";
-const visibleProjects = filterVisibleEntries(projects, isProduction);
 const visibleAchievements = filterVisibleEntries(achievements, isProduction);
 
 const byDateDescending = <T extends { date: string }>(a: T, b: T): number =>
@@ -104,12 +103,8 @@ export function getProfile(): Profile {
   return profile;
 }
 
-export function getProjects(): Project[] {
-  return [...visibleProjects].sort(byDateDescending);
-}
-
-export function getFeaturedProjects(): Project[] {
-  return getProjects().filter((project) => project.featured);
+export function getProjectOverrides(): ProjectOverrides {
+  return projectOverrides;
 }
 
 export function getAchievements(): Achievement[] {
