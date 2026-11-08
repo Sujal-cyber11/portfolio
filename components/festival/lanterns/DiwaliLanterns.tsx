@@ -10,9 +10,6 @@ interface Lantern {
   height: number;
   depth: number;
   speed: number;
-  swayAmplitude: number;
-  swaySpeed: number;
-  phase: number;
   renderX: number;
   renderY: number;
 }
@@ -22,14 +19,8 @@ const MAX_DELTA_SECONDS = 1 / 30;
 function drawLantern(
   context: CanvasRenderingContext2D,
   lantern: Lantern,
-  time: number,
 ): void {
-  const { width, height, depth, phase } = lantern;
-  const flicker =
-    0.88 +
-    0.12 *
-      Math.sin(time * 0.0045 + phase * 4) *
-      Math.sin(time * 0.002 + phase * 1.8);
+  const { width, height, depth } = lantern;
   const topY = -height * 0.48;
   const bottomY = height * 0.46;
   const topHalf = width * 0.25;
@@ -40,7 +31,7 @@ function drawLantern(
   context.globalAlpha = 0.5 + depth * 0.5;
 
   const halo = context.createRadialGradient(0, 0, 0, 0, 0, width * 1.6);
-  halo.addColorStop(0, `rgba(255, 150, 60, ${0.13 * flicker})`);
+  halo.addColorStop(0, "rgba(255, 150, 60, 0.13)");
   halo.addColorStop(1, "rgba(255, 100, 30, 0)");
   context.fillStyle = halo;
   context.beginPath();
@@ -108,8 +99,8 @@ function drawLantern(
     bottomY,
     width * 0.6,
   );
-  glow.addColorStop(0, `rgba(255, 236, 150, ${0.9 * flicker})`);
-  glow.addColorStop(0.5, `rgba(255, 165, 60, ${0.45 * flicker})`);
+  glow.addColorStop(0, "rgba(255, 236, 150, 0.9)");
+  glow.addColorStop(0.5, "rgba(255, 165, 60, 0.45)");
   glow.addColorStop(1, "rgba(255, 120, 35, 0)");
   context.fillStyle = glow;
   context.beginPath();
@@ -185,9 +176,6 @@ export function DiwaliLanterns() {
         height: lanternHeight,
         depth,
         speed: 6 + depth * 13,
-        swayAmplitude: 4 + depth * 9,
-        swaySpeed: 0.18 + Math.random() * 0.25,
-        phase: Math.random() * Math.PI * 2,
         renderX: baseX,
         renderY: y,
       };
@@ -197,11 +185,11 @@ export function DiwaliLanterns() {
       Object.assign(lantern, createLantern(true));
     }
 
-    function draw(time: number): void {
+    function draw(): void {
       context2d.clearRect(0, 0, width, height);
 
       for (const lantern of lanterns) {
-        drawLantern(context2d, lantern, time);
+        drawLantern(context2d, lantern);
       }
     }
 
@@ -229,14 +217,11 @@ export function DiwaliLanterns() {
           height: lanternHeight,
           depth,
           speed: 0,
-          swayAmplitude: 0,
-          swaySpeed: 0,
-          phase: index * 1.4,
           renderX: width * xRatio,
           renderY: height * yRatio,
         };
 
-        drawLantern(context2d, lantern, 1000 + index * 350);
+        drawLantern(context2d, lantern);
       }
     }
 
@@ -269,10 +254,7 @@ export function DiwaliLanterns() {
 
       for (const lantern of lanterns) {
         lantern.y -= lantern.speed * delta;
-        lantern.renderX =
-          lantern.baseX +
-          Math.sin(time * lantern.swaySpeed + lantern.phase) *
-            lantern.swayAmplitude;
+        lantern.renderX = lantern.baseX;
         lantern.renderY = lantern.y;
 
         if (lantern.renderY < -lantern.height * 1.5) {
@@ -280,7 +262,7 @@ export function DiwaliLanterns() {
         }
       }
 
-      draw(time);
+      draw();
       frame = window.requestAnimationFrame(loop);
     }
 
