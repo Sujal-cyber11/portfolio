@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
-import { FestivalAmbient } from "@/components/festival/ambient/FestivalAmbient";
 import { ThemeScript } from "@/components/festival/ThemeScript";
 import { NeuronBackdrop } from "@/components/layout/NeuronBackdrop";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -100,7 +99,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <NeuronBackdrop />
-        <FestivalAmbient />
         <ThemeProvider
           festivals={festivalOptions}
           scheduled={scheduled}

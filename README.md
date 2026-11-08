@@ -73,8 +73,7 @@ The GitHub section skips the portfolio's own repo automatically:
 - Internal links preserve a manual `?theme` through `ThemedLink`.
 - The switch updates with `history.replaceState` without reloading.
 - `/festival/[slug]` uses its festival theme as the fallback, but the switch can still turn it off; canonical and Open Graph URLs stay clean.
-- Diwali adds a dynamically loaded canvas of floating lanterns: mouse wind, click bursts, a 10-burst firework easter egg and static lanterns under reduced motion. The bundle is not loaded outside Diwali mode.
-- Lantern and gift chimes share one Web Audio master gain. Use the top-bar Festival sound switch, the step-one sound choices, or `localStorage.setItem("festival-sound", "off")` to mute.
+- Gift chimes use a single Web Audio master gain. Use the top-bar Festival sound switch, the step-one sound choices, or `localStorage.setItem("festival-sound", "off")` to mute.
 - Other festivals override CSS variables only.
 - Animations are disabled under `prefers-reduced-motion`.
 
