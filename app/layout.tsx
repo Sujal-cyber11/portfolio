@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { ThemeScript } from "@/components/festival/ThemeScript";
+import { GravityGrid } from "@/components/layout/GravityGrid";
 import { NeuronBackdrop } from "@/components/layout/NeuronBackdrop";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -98,6 +99,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <a className="skip-link" href="#main">
           Skip to content
         </a>
+        <GravityGrid />
         <NeuronBackdrop />
         <ThemeProvider
           festivals={festivalOptions}

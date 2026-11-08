@@ -182,7 +182,25 @@ export function FestivalSplashHost({ profileName }: { profileName: string }) {
       return;
     }
 
-    if (!activeFestival || !resolved.themeClass) {
+    const currentUrlParam = getUrlThemeParam();
+    const currentStoredChoice = getStoredThemeChoice();
+    const currentPageFestival = findThemeFestival(
+      runtime.festivals,
+      getFestivalSlugFromPathname(pathname),
+    );
+    const currentTheme = resolveTheme({
+      urlParam: currentUrlParam,
+      storedChoice: currentStoredChoice,
+      scheduled: runtime.scheduled,
+      pageFestival: currentPageFestival,
+      festivals: runtime.festivals,
+    });
+    const currentFestival = findThemeFestival(
+      runtime.festivals,
+      currentTheme.slug,
+    );
+
+    if (!currentFestival || !currentTheme.themeClass) {
       return;
     }
 
@@ -197,8 +215,17 @@ export function FestivalSplashHost({ profileName }: { profileName: string }) {
       return;
     }
 
-    showSplash(activeFestival);
-  }, [activeFestival, isGiftPage, resolved.themeClass, showSplash, visible]);
+    showSplash(currentFestival);
+  }, [
+    isGiftPage,
+    pathname,
+    runtime.festivals,
+    runtime.scheduled,
+    showSplash,
+    storedChoice,
+    urlParam,
+    visible,
+  ]);
 
   useEffect(() => {
     function handleReplay(event: Event): void {
