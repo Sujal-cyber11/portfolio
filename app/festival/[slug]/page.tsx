@@ -63,12 +63,6 @@ export default async function FestivalPage({
           ))}
         </ul>
 
-        <p className={styles.note}>
-          {festival.recurringYearly
-            ? "This window repeats every year."
-            : "These dates are placeholders. Verify and update them in content/festivals.json."}
-        </p>
-
         <div className={styles.actions}>
           <ThemedLink className={styles.primary} href="/">
             Back to portfolio

@@ -4,6 +4,7 @@ import festivalsJson from "@/content/festivals.json";
 import profileJson from "@/content/profile.json";
 import projectsJson from "@/content/projects.json";
 import type { z } from "zod";
+import { filterVisibleEntries } from "@/lib/content-filter";
 import { getActiveFestival } from "@/lib/festival";
 import {
   achievementsSchema,
@@ -92,6 +93,10 @@ const festivals: Festival[] = loadContent(
   festivalsJson,
 );
 
+const isProduction = process.env.NODE_ENV === "production";
+const visibleProjects = filterVisibleEntries(projects, isProduction);
+const visibleAchievements = filterVisibleEntries(achievements, isProduction);
+
 const byDateDescending = <T extends { date: string }>(a: T, b: T): number =>
   b.date.localeCompare(a.date);
 
@@ -100,7 +105,7 @@ export function getProfile(): Profile {
 }
 
 export function getProjects(): Project[] {
-  return [...projects].sort(byDateDescending);
+  return [...visibleProjects].sort(byDateDescending);
 }
 
 export function getFeaturedProjects(): Project[] {
@@ -108,7 +113,7 @@ export function getFeaturedProjects(): Project[] {
 }
 
 export function getAchievements(): Achievement[] {
-  return [...achievements].sort(byDateDescending);
+  return [...visibleAchievements].sort(byDateDescending);
 }
 
 export function getLatestAchievements(limit = 3): Achievement[] {

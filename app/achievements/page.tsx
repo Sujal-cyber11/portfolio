@@ -18,15 +18,17 @@ export default function AchievementsPage() {
         <h1>Milestones so far</h1>
         <p>
           Results from courses, competitions and small open-source
-          contributions. Placeholder entries are marked in the content files.
+          contributions.
         </p>
       </div>
 
-      <AchievementsList
-        achievements={achievements}
-        intro="Sorted newest first."
-        title="All achievements"
-      />
+      {achievements.length > 0 ? (
+        <AchievementsList
+          achievements={achievements}
+          intro="Sorted newest first."
+          title="All achievements"
+        />
+      ) : null}
     </>
   );
 }

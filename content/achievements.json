@@ -2,35 +2,37 @@
   {
     "id": "placeholder-ctf-top-10",
     "title": "Top 10 finish — National CTF",
-    "issuer": "Placeholder CTF (replace this entry)",
+    "issuer": "National CTF",
     "date": "2026-09-14",
-    "description": "[Placeholder entry] Finished in the top ten of a beginner-friendly national capture-the-flag event. Replace with a real result.",
-    "link": "https://example.com/placeholder-ctf",
-    "category": "hackathon"
+    "description": "Finished in the top ten of a beginner-friendly national capture-the-flag event.",
+    "category": "hackathon",
+    "placeholder": true
   },
   {
     "id": "placeholder-python-certificate",
     "title": "Python for Everybody",
-    "issuer": "Coursera (placeholder)",
+    "issuer": "Coursera",
     "date": "2026-06-02",
-    "description": "[Placeholder entry] Completed a Python fundamentals course. Replace with your certificate details.",
-    "category": "certificate"
+    "description": "Completed a Python fundamentals course covering data structures, web scraping and databases.",
+    "category": "certificate",
+    "placeholder": true
   },
   {
     "id": "placeholder-coding-award",
     "title": "School coding award",
-    "issuer": "Placeholder school event",
+    "issuer": "School technology event",
     "date": "2025-12-10",
-    "description": "[Placeholder entry] Recognised for a small automation project at a school technology event.",
-    "category": "award"
+    "description": "Recognised for a small automation project at a school technology event.",
+    "category": "award",
+    "placeholder": true
   },
   {
     "id": "placeholder-open-source",
     "title": "First open-source contribution",
-    "issuer": "Placeholder project maintainers",
+    "issuer": "Open-source project maintainers",
     "date": "2026-04-21",
-    "description": "[Placeholder entry] Landed a documentation fix in a small open-source repository.",
-    "link": "https://github.com/your-github-username",
-    "category": "other"
+    "description": "Landed a documentation fix in a small open-source repository.",
+    "category": "other",
+    "placeholder": true
   }
 ]

@@ -7,6 +7,7 @@ export interface ThemeFestivalOption {
   slug: string;
   name: string;
   themeClass: string;
+  accentEmoji: string;
 }
 
 export type ThemeSource = "url" | "stored" | "schedule" | "default";
@@ -27,8 +28,13 @@ export interface ResolveThemeInput {
 
 export interface ThemeRuntimeConfig {
   festivals: ThemeFestivalOption[];
-  allFestivals: ThemeFestivalOption[];
   scheduled: ThemeFestivalOption | null;
+}
+
+export interface ThemeToggleState {
+  visible: boolean;
+  festival: ThemeFestivalOption | null;
+  checked: boolean;
 }
 
 export function findThemeFestival(
@@ -105,28 +111,44 @@ export function resolveTheme({
   };
 }
 
-export function getSelectedThemeChoice(
-  urlParam: string | null,
-  storedChoice: string | null,
-  festivals: readonly ThemeFestivalOption[],
-): string {
-  if (urlParam === THEME_DEFAULT) {
-    return THEME_DEFAULT;
+export function getThemeToggleState({
+  urlParam,
+  storedChoice,
+  scheduled,
+  festivals,
+}: ResolveThemeInput): ThemeToggleState {
+  const previewFestival = findThemeFestival(festivals, urlParam);
+
+  if (!previewFestival && !scheduled) {
+    return {
+      visible: false,
+      festival: null,
+      checked: false,
+    };
   }
 
-  if (findThemeFestival(festivals, urlParam)) {
-    return urlParam ?? THEME_AUTO;
+  const resolved = resolveTheme({
+    urlParam,
+    storedChoice,
+    scheduled,
+    festivals,
+  });
+  const resolvedFestival = findThemeFestival(festivals, resolved.slug);
+  const festival = resolvedFestival ?? previewFestival ?? scheduled;
+
+  if (!festival) {
+    return {
+      visible: false,
+      festival: null,
+      checked: false,
+    };
   }
 
-  if (storedChoice === THEME_DEFAULT) {
-    return THEME_DEFAULT;
-  }
-
-  if (findThemeFestival(festivals, storedChoice)) {
-    return storedChoice ?? THEME_AUTO;
-  }
-
-  return THEME_AUTO;
+  return {
+    visible: true,
+    festival,
+    checked: resolved.themeClass !== null,
+  };
 }
 
 export function isThemeLinkParam(

@@ -53,6 +53,7 @@ export const projectSchema = z
     featured: z.boolean(),
     date: isoDate,
     status: projectStatusSchema,
+    placeholder: z.boolean().optional(),
   })
   .strict();
 
@@ -73,6 +74,7 @@ export const achievementSchema = z
     link: z.url().optional(),
     image: uploadFilename.optional(),
     category: achievementCategorySchema,
+    placeholder: z.boolean().optional(),
   })
   .strict();
 

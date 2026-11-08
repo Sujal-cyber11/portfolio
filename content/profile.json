@@ -1,7 +1,7 @@
 {
   "name": "Sujal",
   "tagline": "Self-taught developer building toward cybersecurity and low-level systems.",
-  "bio": "I am a self-taught developer with a strong foundation in Python, solid C skills and growing data-structures knowledge. I start my BTech in September and want to work at the intersection of cybersecurity, low-level systems and eventually entrepreneurship. This bio is placeholder copy — replace it in content/profile.json.",
+  "bio": "I am a self-taught developer with a strong foundation in Python, solid C skills and growing data-structures knowledge. I start my BTech in September and want to work at the intersection of cybersecurity, low-level systems and eventually entrepreneurship.",
   "skills": [
     "Python",
     "C",
@@ -14,7 +14,7 @@
   "socials": [
     {
       "label": "GitHub",
-      "url": "https://github.com/your-github-username"
+      "url": "https://github.com/Sujal-cyber11"
     },
     {
       "label": "LinkedIn",
@@ -23,7 +23,7 @@
   ],
   "email": "you@example.com",
   "resumeUrl": "/resume.pdf",
-  "githubUsername": "your-github-username",
+  "githubUsername": "Sujal-cyber11",
   "excludeRepos": ["portfolio"],
   "includeForks": false,
   "includeArchived": false

@@ -5,7 +5,6 @@
   gap: var(--space-6);
   padding: var(--space-7);
   border: 1px solid var(--border);
-  border-top: 2px solid var(--accent);
   border-radius: var(--radius-lg);
   background:
     radial-gradient(circle at 85% 15%, var(--accent-soft), transparent 45%),

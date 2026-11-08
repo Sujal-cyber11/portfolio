@@ -54,6 +54,12 @@
   text-transform: uppercase;
 }
 
+.eyebrow::before {
+  color: var(--accent);
+  content: "$ ";
+  opacity: 0.7;
+}
+
 .page-intro {
   padding-block: var(--space-8) var(--space-6);
 }

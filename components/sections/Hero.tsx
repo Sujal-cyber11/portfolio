@@ -14,6 +14,9 @@ export function Hero({ profile }: HeroProps) {
           <p className="eyebrow">Portfolio</p>
           <h1 id="hero-title" className={styles.title}>
             {profile.name}
+            <span aria-hidden="true" className={styles.cursor}>
+              _
+            </span>
           </h1>
           <p className={styles.tagline}>{profile.tagline}</p>
           <p className={styles.bio}>{profile.bio}</p>

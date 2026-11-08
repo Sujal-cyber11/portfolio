@@ -20,15 +20,16 @@ export default async function ProjectsPage() {
         <h1>Things I have built and broken</h1>
         <p>
           A mix of finished tools, ongoing experiments and low-level exercises.
-          Every entry is loaded from validated content files.
         </p>
       </div>
 
-      <ProjectsGrid
-        intro="Sorted newest first."
-        projects={projects}
-        title="All projects"
-      />
+      {projects.length > 0 ? (
+        <ProjectsGrid
+          intro="Sorted newest first."
+          projects={projects}
+          title="All projects"
+        />
+      ) : null}
     </>
   );
 }

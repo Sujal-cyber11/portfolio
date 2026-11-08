@@ -1,5 +1,6 @@
 node_modules
 .next
+.next-verify
 package-lock.json
 next-env.d.ts
 public/uploads

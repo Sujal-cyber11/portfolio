@@ -30,19 +30,23 @@ export default async function Home() {
     <>
       <Hero profile={profile} />
 
-      <ProjectsGrid
-        intro="Selected work across Python, C and security tooling."
-        projects={featuredProjects}
-        title="Featured projects"
-        viewAllHref="/projects"
-      />
+      {featuredProjects.length > 0 ? (
+        <ProjectsGrid
+          intro="Selected work across Python, C and security tooling."
+          projects={featuredProjects}
+          title="Featured projects"
+          viewAllHref="/projects"
+        />
+      ) : null}
 
-      <AchievementsList
-        achievements={latestAchievements}
-        intro="Recent milestones and things I am learning from."
-        title="Latest achievements"
-        viewAllHref="/achievements"
-      />
+      {latestAchievements.length > 0 ? (
+        <AchievementsList
+          achievements={latestAchievements}
+          intro="Recent milestones and things I am learning from."
+          title="Latest achievements"
+          viewAllHref="/achievements"
+        />
+      ) : null}
 
       <Skills skills={profile.skills} />
 

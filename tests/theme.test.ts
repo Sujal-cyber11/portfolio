@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  getSelectedThemeChoice,
+  getThemeToggleState,
   isThemeLinkParam,
   preserveThemeParam,
   resolveTheme,
@@ -10,8 +10,18 @@ import {
 } from "@/lib/theme";
 
 const festivals: ThemeFestivalOption[] = [
-  { slug: "diwali", name: "Diwali", themeClass: "theme-diwali" },
-  { slug: "holi", name: "Holi", themeClass: "theme-holi" },
+  {
+    slug: "diwali",
+    name: "Diwali",
+    themeClass: "theme-diwali",
+    accentEmoji: "🪔",
+  },
+  {
+    slug: "holi",
+    name: "Holi",
+    themeClass: "theme-holi",
+    accentEmoji: "🎨",
+  },
 ];
 
 const scheduled = festivals[1];
@@ -134,17 +144,107 @@ describe("resolveTheme", () => {
   });
 });
 
-describe("getSelectedThemeChoice", () => {
-  it("reflects known URL themes and the default choice", () => {
-    expect(getSelectedThemeChoice("diwali", "off", festivals)).toBe("diwali");
-    expect(getSelectedThemeChoice(THEME_DEFAULT, "diwali", festivals)).toBe(
-      THEME_DEFAULT,
-    );
+describe("getThemeToggleState", () => {
+  it("hides the toggle when there is no scheduled or previewed festival", () => {
+    const state = getThemeToggleState({
+      urlParam: null,
+      storedChoice: null,
+      scheduled: null,
+      festivals,
+    });
+
+    expect(state).toEqual({
+      visible: false,
+      festival: null,
+      checked: false,
+    });
   });
 
-  it("ignores unknown URL values", () => {
-    expect(getSelectedThemeChoice("unknown", "holi", festivals)).toBe("holi");
-    expect(getSelectedThemeChoice("unknown", null, festivals)).toBe(THEME_AUTO);
+  it("shows the scheduled festival as checked", () => {
+    const state = getThemeToggleState({
+      urlParam: null,
+      storedChoice: null,
+      scheduled,
+      festivals,
+    });
+
+    expect(state.visible).toBe(true);
+    expect(state.checked).toBe(true);
+    expect(state.festival?.slug).toBe("holi");
+  });
+
+  it("shows a URL-previewed festival without a scheduled festival", () => {
+    const state = getThemeToggleState({
+      urlParam: "diwali",
+      storedChoice: null,
+      scheduled: null,
+      festivals,
+    });
+
+    expect(state.visible).toBe(true);
+    expect(state.checked).toBe(true);
+    expect(state.festival?.slug).toBe("diwali");
+  });
+
+  it("shows the scheduled festival unchecked when the URL disables themes", () => {
+    const state = getThemeToggleState({
+      urlParam: THEME_DEFAULT,
+      storedChoice: null,
+      scheduled,
+      festivals,
+    });
+
+    expect(state.visible).toBe(true);
+    expect(state.checked).toBe(false);
+    expect(state.festival?.slug).toBe("holi");
+  });
+
+  it("uses the saved festival choice over the schedule", () => {
+    const state = getThemeToggleState({
+      urlParam: null,
+      storedChoice: "diwali",
+      scheduled,
+      festivals,
+    });
+
+    expect(state.visible).toBe(true);
+    expect(state.checked).toBe(true);
+    expect(state.festival?.slug).toBe("diwali");
+  });
+
+  it("lets a URL preview override the scheduled label", () => {
+    const state = getThemeToggleState({
+      urlParam: "diwali",
+      storedChoice: THEME_DEFAULT,
+      scheduled,
+      festivals,
+    });
+
+    expect(state.visible).toBe(true);
+    expect(state.checked).toBe(true);
+    expect(state.festival?.slug).toBe("diwali");
+  });
+
+  it("ignores unknown URL slugs for visibility", () => {
+    const state = getThemeToggleState({
+      urlParam: "unknown",
+      storedChoice: null,
+      scheduled: null,
+      festivals,
+    });
+
+    expect(state.visible).toBe(false);
+  });
+
+  it("hides when only a saved festival exists without a live context", () => {
+    const state = getThemeToggleState({
+      urlParam: null,
+      storedChoice: "diwali",
+      scheduled: null,
+      festivals,
+    });
+
+    expect(state.visible).toBe(false);
   });
 });
 

@@ -88,7 +88,7 @@ export function applyResolvedTheme(
   const pathSlug = pathname
     ? getFestivalSlugFromPathname(pathname)
     : getFestivalSlugFromPath();
-  const pageFestival = findThemeFestival(runtime.allFestivals, pathSlug);
+  const pageFestival = findThemeFestival(runtime.festivals, pathSlug);
 
   if (pageFestival) {
     applyThemeClass(pageFestival.themeClass);

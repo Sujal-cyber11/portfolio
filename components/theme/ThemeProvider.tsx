@@ -7,20 +7,18 @@ const ThemeContext = createContext<ThemeRuntimeConfig | null>(null);
 
 interface ThemeProviderProps {
   festivals: ThemeFestivalOption[];
-  allFestivals: ThemeFestivalOption[];
   scheduled: ThemeFestivalOption | null;
   children: ReactNode;
 }
 
 export function ThemeProvider({
   festivals,
-  allFestivals,
   scheduled,
   children,
 }: ThemeProviderProps) {
   const runtime = useMemo(
-    () => ({ festivals, allFestivals, scheduled }),
-    [festivals, allFestivals, scheduled],
+    () => ({ festivals, scheduled }),
+    [festivals, scheduled],
   );
 
   return (
