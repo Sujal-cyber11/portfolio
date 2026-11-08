@@ -43,7 +43,8 @@ export function Hero({ profile }: HeroProps) {
             ))}
           </ul>
           <p className={styles.cardFooter}>
-            Open to internships and early-stage collaborations.
+            Interested in cybersecurity, low-level systems and practical
+            tooling.
           </p>
         </aside>
       </div>
