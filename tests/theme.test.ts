@@ -22,11 +22,11 @@ const gift = {
 
 const festivals: ThemeFestivalOption[] = [
   {
-    slug: "diwali",
-    name: "Diwali",
-    themeClass: "theme-diwali",
-    accentEmoji: "🪔",
-    greeting: "Happy Diwali",
+    slug: "new-year",
+    name: "New Year",
+    themeClass: "theme-new-year",
+    accentEmoji: "🎆",
+    greeting: "Happy New Year",
     gift,
   },
   {
@@ -44,24 +44,24 @@ const scheduled = festivals[1];
 describe("resolveTheme", () => {
   it("uses a known URL theme before saved and scheduled choices", () => {
     const resolved = resolveTheme({
-      urlParam: "diwali",
+      urlParam: "new-year",
       storedChoice: "off",
       scheduled,
       festivals,
     });
 
     expect(resolved).toMatchObject({
-      slug: "diwali",
-      themeClass: "theme-diwali",
+      slug: "new-year",
+      themeClass: "theme-new-year",
       source: "url",
-      choice: "diwali",
+      choice: "new-year",
     });
   });
 
   it("uses URL ?theme=off as the default theme", () => {
     const resolved = resolveTheme({
       urlParam: THEME_DEFAULT,
-      storedChoice: "diwali",
+      storedChoice: "new-year",
       scheduled,
       festivals,
     });
@@ -74,14 +74,14 @@ describe("resolveTheme", () => {
   it("ignores an unknown URL slug and falls through to the stored choice", () => {
     const resolved = resolveTheme({
       urlParam: "not-a-festival",
-      storedChoice: "diwali",
+      storedChoice: "new-year",
       scheduled,
       festivals,
     });
 
     expect(resolved).toMatchObject({
-      slug: "diwali",
-      themeClass: "theme-diwali",
+      slug: "new-year",
+      themeClass: "theme-new-year",
       source: "stored",
     });
   });
@@ -168,7 +168,7 @@ describe("resolveTheme", () => {
     });
 
     expect(resolved).toMatchObject({
-      slug: "diwali",
+      slug: "new-year",
       source: "page",
     });
   });
@@ -227,7 +227,7 @@ describe("getThemeToggleState", () => {
 
   it("shows a URL-previewed festival without a scheduled festival", () => {
     const state = getThemeToggleState({
-      urlParam: "diwali",
+      urlParam: "new-year",
       storedChoice: null,
       scheduled: null,
       festivals,
@@ -235,7 +235,7 @@ describe("getThemeToggleState", () => {
 
     expect(state.visible).toBe(true);
     expect(state.checked).toBe(true);
-    expect(state.festival?.slug).toBe("diwali");
+    expect(state.festival?.slug).toBe("new-year");
   });
 
   it("shows the scheduled festival unchecked when the URL disables themes", () => {
@@ -254,19 +254,19 @@ describe("getThemeToggleState", () => {
   it("uses the saved festival choice over the schedule", () => {
     const state = getThemeToggleState({
       urlParam: null,
-      storedChoice: "diwali",
+      storedChoice: "new-year",
       scheduled,
       festivals,
     });
 
     expect(state.visible).toBe(true);
     expect(state.checked).toBe(true);
-    expect(state.festival?.slug).toBe("diwali");
+    expect(state.festival?.slug).toBe("new-year");
   });
 
   it("lets a URL preview override the scheduled label", () => {
     const state = getThemeToggleState({
-      urlParam: "diwali",
+      urlParam: "new-year",
       storedChoice: THEME_DEFAULT,
       scheduled,
       festivals,
@@ -274,7 +274,7 @@ describe("getThemeToggleState", () => {
 
     expect(state.visible).toBe(true);
     expect(state.checked).toBe(true);
-    expect(state.festival?.slug).toBe("diwali");
+    expect(state.festival?.slug).toBe("new-year");
   });
 
   it("ignores unknown URL slugs for visibility", () => {
@@ -291,7 +291,7 @@ describe("getThemeToggleState", () => {
   it("hides when only a saved festival exists without a live context", () => {
     const state = getThemeToggleState({
       urlParam: null,
-      storedChoice: "diwali",
+      storedChoice: "new-year",
       scheduled: null,
       festivals,
     });
@@ -310,7 +310,7 @@ describe("getThemeToggleState", () => {
 
     expect(on.visible).toBe(true);
     expect(on.checked).toBe(true);
-    expect(on.festival?.slug).toBe("diwali");
+    expect(on.festival?.slug).toBe("new-year");
 
     const off = getThemeToggleState({
       urlParam: THEME_DEFAULT,
@@ -322,14 +322,14 @@ describe("getThemeToggleState", () => {
 
     expect(off.visible).toBe(true);
     expect(off.checked).toBe(false);
-    expect(off.festival?.slug).toBe("diwali");
+    expect(off.festival?.slug).toBe("new-year");
   });
 });
 
 describe("isThemeLinkParam", () => {
   it("accepts default and known festival slugs", () => {
     expect(isThemeLinkParam(THEME_DEFAULT, festivals)).toBe(true);
-    expect(isThemeLinkParam("diwali", festivals)).toBe(true);
+    expect(isThemeLinkParam("new-year", festivals)).toBe(true);
   });
 
   it("rejects auto, missing and unknown values", () => {
@@ -345,8 +345,8 @@ describe("ThemedLink param preservation", () => {
   });
 
   it("appends a manual theme to internal links", () => {
-    expect(preserveThemeParam("/projects", "diwali")).toBe(
-      "/projects?theme=diwali",
+    expect(preserveThemeParam("/projects", "new-year")).toBe(
+      "/projects?theme=new-year",
     );
     expect(preserveThemeParam("/#contact", THEME_DEFAULT)).toBe(
       "/?theme=off#contact",
@@ -354,8 +354,8 @@ describe("ThemedLink param preservation", () => {
   });
 
   it("keeps the current path for hash links", () => {
-    expect(preserveThemeParam("#contact", "diwali", "/achievements")).toBe(
-      "/achievements?theme=diwali#contact",
+    expect(preserveThemeParam("#contact", "new-year", "/achievements")).toBe(
+      "/achievements?theme=new-year#contact",
     );
   });
 
@@ -367,7 +367,7 @@ describe("ThemedLink param preservation", () => {
 
   it("leaves external links untouched", () => {
     expect(
-      preserveThemeParam("https://github.com/Sujal-cyber11", "diwali"),
+      preserveThemeParam("https://github.com/Sujal-cyber11", "new-year"),
     ).toBe("https://github.com/Sujal-cyber11");
   });
 });

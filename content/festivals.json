@@ -1,27 +1,5 @@
 [
   {
-    "id": "diwali",
-    "name": "Diwali",
-    "slug": "diwali",
-    "windows": [{ "start": "2026-11-08", "end": "2026-11-10" }],
-    "recurringYearly": false,
-    "priority": 100,
-    "themeClass": "theme-diwali",
-    "greeting": "Happy Diwali",
-    "accentEmoji": "🪔",
-    "enabled": true,
-    "gift": {
-      "type": "sweets",
-      "closingLine": "Wishing you light and sweetness.",
-      "palette": {
-        "body": "#ff8a3d",
-        "lid": "#ffd166",
-        "ribbon": "#c92b1d",
-        "glow": "#ffb347"
-      }
-    }
-  },
-  {
     "id": "holi",
     "name": "Holi",
     "slug": "holi",

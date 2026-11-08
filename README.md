@@ -33,7 +33,7 @@ npm run format     # Prettier
 
 - `content/profile.json`: contact details are set for Sujal; edit the resume value when ready.
 - `content/projects.json`: optional per-repo overrides keyed by GitHub repo name. Unmatched keys become manual projects.
-- `content/festivals.json`: verify dates, gift closing lines and gift palettes. Diwali and Holi are movable, so add explicit windows for future years or set `recurringYearly` only when the date is fixed.
+- `content/festivals.json`: verify dates, gift closing lines and gift palettes. Movable festivals need explicit windows for future years; set `recurringYearly` only when the date is fixed.
 - Add `GITHUB_TOKEN` to `.env.local` for higher GitHub API rate limits (optional; the build falls back gracefully).
 - Seed achievements use `"placeholder": true`; they are visible locally but hidden from production builds. Replace them and remove the flag when ready.
 - Put images in `public/uploads` and reference only the filename in content JSON (`"image": "project.png"`).
@@ -83,8 +83,8 @@ The GitHub section skips the portfolio's own repo automatically:
 - Step one auto-advances after four seconds or via Continue; it also contains the sound/silent entry choices.
 - Step two waits indefinitely for the gift. Click, tap, Enter or Space opens it; step three shows the festival closing line and the rocket entry.
 - `Replay wish` in the top bar replays all three steps.
-- Gift type, closing line and palette live in each `festivals.json` gift block. Diwali opens into detailed SVG sweets; other festivals use a wrapped box.
-- To use sweet photos instead of the SVGs, add `laddu.webp`, `kaju-katli.webp`, `jalebi.webp` and/or `barfi.webp` (or `.png`/`.jpg`) to `public/gifts`.
+- Gift type, closing line and palette live in each `festivals.json` gift block. The wrapped box is the default; the detailed sweets layout remains available for festivals that opt in.
+- To use sweet photos instead of the SVGs, add the matching images to `public/gifts`.
 - Shareable gift pages live at `/festival/[slug]/gift?to=<name>`; names are sanitized and the page has a clean canonical URL.
 
 ## Deploying
