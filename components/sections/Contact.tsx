@@ -12,10 +12,9 @@ export function Contact({ profile }: ContactProps) {
         <div className={styles.panel}>
           <div>
             <p className="eyebrow">Contact</p>
-            <h2 id="contact-title">Have a problem worth solving?</h2>
+            <h2 id="contact-title">Get in touch</h2>
             <p className={styles.copy}>
-              I am open to internships, junior roles and early-stage
-              collaborations. The fastest way to reach me is email.
+              The fastest way to reach me is email.
             </p>
           </div>
 
