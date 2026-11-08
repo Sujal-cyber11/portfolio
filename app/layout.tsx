@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import { FestivalAmbient } from "@/components/festival/ambient/FestivalAmbient";
 import { FestivalDecorations } from "@/components/festival/FestivalDecorations";
 import { ThemeScript } from "@/components/festival/ThemeScript";
 import { NeuronBackdrop } from "@/components/layout/NeuronBackdrop";
@@ -94,6 +95,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <NeuronBackdrop />
         <FestivalDecorations />
+        <FestivalAmbient />
         <ThemeProvider festivals={festivalOptions} scheduled={scheduled}>
           <ThemeBar />
           <ThemeSync />
