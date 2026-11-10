@@ -21,13 +21,32 @@ npm run dev
 Useful commands:
 
 ```bash
-npm run build      # production build
-npm run lint       # ESLint
-npm run typecheck  # tsc --noEmit
-npm test           # Vitest
-npm run add        # content CLI
-npm run format     # Prettier
+npm run dev          # local development server
+npm run build        # production build
+npm run start        # run the production build
+npm run lint         # ESLint
+npm run typecheck    # tsc --noEmit
+npm test             # Vitest
+npm run add          # interactive content CLI
+npm run format       # write Prettier formatting
+npm run format:check # check Prettier formatting without writing
 ```
+
+## Project structure
+
+- `app/` — App Router routes for the home page, projects, achievements, not-found, robots, sitemap and festivals.
+- `components/` — React sections plus layout, theme and festival components with their CSS Modules.
+- `content/` — validated JSON content: profile, project overrides, achievements and festivals.
+- `lib/` — content loading and schemas, GitHub fetching/caching, project categories, SEO and site helpers.
+- `public/` — static assets served as-is; `uploads/` holds project images and `gifts/` holds festival images.
+- `reference/` — reference material and screenshots.
+- `scripts/` — `add.ts`, the interactive content CLI.
+- `styles/` — shared layout CSS and festival theme variables.
+- `tests/` — Vitest unit tests.
+- `next.config.ts` — Cache Components, partial prefetching and the optional `NEXT_DIST_DIR` override.
+- `package.json` — scripts and dependencies.
+- `tsconfig.json`, `eslint.config.mjs`, `vitest.config.mts`, `.prettierrc.json`, `.prettierignore` — TypeScript, lint, test and formatting configuration.
+- `README.md`, `AGENTS.md` — project documentation and agent instructions.
 
 ## Environment variables
 
@@ -147,4 +166,9 @@ The home page only shows featured projects with a non-empty description. A featu
 
 ## Deploying
 
-Push to GitHub and import the repo in Vercel. Set `NEXT_PUBLIC_SITE_URL` to the production URL and optionally `GITHUB_TOKEN`. If unset, metadata falls back to `https://sujalrastogi.vercel.app`. Content is read at build time, so redeploy after editing JSON or adding entries with `npm run add`.
+1. Push the repository to GitHub.
+2. In Vercel, choose **Add New → Project**, import the repository and keep the detected Next.js settings. The build command is `npm run build`.
+3. Add environment variables under Project → Settings → Environment Variables. See [Environment variables](#environment-variables) for the full table. `NEXT_PUBLIC_SITE_URL` should be the production URL; `GITHUB_TOKEN` is optional but recommended (see [Creating a GitHub token](#creating-a-github-token)). Vercel provides `VERCEL_GIT_REPO_SLUG`; `GITHUB_REPO` and `NEXT_DIST_DIR` are optional overrides.
+4. Deploy.
+
+GitHub repositories refresh by themselves through cached revalidation (see [Repository discovery and caching](#repository-discovery-and-caching)): stale 5 minutes, revalidate 1 hour, expire 1 day. Edits to `content/*.json` are read at build time, so redeploy after changing content or using `npm run add`. If `NEXT_PUBLIC_SITE_URL` is unset, metadata falls back to `https://sujalrastogi.vercel.app`.
