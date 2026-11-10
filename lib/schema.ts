@@ -20,6 +20,7 @@ export const socialSchema = z
   .object({
     label: z.string().trim().min(1),
     url: z.url(),
+    handle: z.string().trim().min(1).optional(),
   })
   .strict();
 
@@ -31,7 +32,6 @@ export const profileSchema = z
     skills: z.array(z.string().trim().min(1)).min(1),
     socials: z.array(socialSchema),
     email: z.email(),
-    resumeUrl: z.string().trim().min(1),
     githubUsername: z.string().trim().min(1),
     excludeRepos: z.array(z.string().trim().min(1)),
     includeForks: z.boolean(),
@@ -82,7 +82,12 @@ export const achievementSchema = z
     description: z.string().trim().min(1),
     link: z.url().optional(),
     image: uploadFilename.optional(),
+    imageAlt: z.string().trim().min(1).optional(),
     category: achievementCategorySchema,
+    placement: z.string().trim().min(1).optional(),
+    outOf: z.string().trim().min(1).optional(),
+    round: z.string().trim().min(1).optional(),
+    eventDetails: z.array(z.string().trim().min(1)).optional(),
     placeholder: z.boolean().optional(),
   })
   .strict();

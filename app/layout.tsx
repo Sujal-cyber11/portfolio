@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import {
+  Inter,
+  Instrument_Serif,
+  JetBrains_Mono,
+  Unbounded,
+} from "next/font/google";
 import { ThemeScript } from "@/components/festival/ThemeScript";
-import { GravityGrid } from "@/components/layout/GravityGrid";
-import { NeuronBackdrop } from "@/components/layout/NeuronBackdrop";
-import { SiteFooter } from "@/components/layout/SiteFooter";
-import { SiteHeader } from "@/components/layout/SiteHeader";
 import { FestivalSplashHost } from "@/components/festival/splash/FestivalSplashHost";
+import { SiteNav } from "@/components/redesign/SiteNav";
 import { ThemeBar } from "@/components/theme/ThemeBar";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ThemeSync } from "@/components/theme/ThemeSync";
@@ -14,6 +16,26 @@ import { getSweetImages } from "@/lib/gift-images";
 import { getSiteUrl } from "@/lib/site";
 import { resolveTheme, type ThemeFestivalOption } from "@/lib/theme";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const unbounded = Unbounded({
+  subsets: ["latin"],
+  variable: "--font-unbounded",
+  display: "swap",
+});
+
+const instrument = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
+  display: "swap",
+});
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -83,13 +105,24 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     festivalOptions.map((festival) => [festival.slug, festival.themeClass]),
   );
   const sweetImages = getSweetImages();
-  const htmlClassName = activeThemeClass
-    ? `${mono.variable} ${activeThemeClass}`
-    : mono.variable;
+  const htmlClassName = [
+    inter.variable,
+    unbounded.variable,
+    instrument.variable,
+    mono.variable,
+    activeThemeClass,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <html className={htmlClassName} lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('reveal-ready')",
+          }}
+        />
         <ThemeScript
           festivalThemes={festivalThemes}
           scheduledThemeClass={activeThemeClass}
@@ -99,8 +132,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <a className="skip-link" href="#main">
           Skip to content
         </a>
-        <GravityGrid />
-        <NeuronBackdrop />
         <ThemeProvider
           festivals={festivalOptions}
           scheduled={scheduled}
@@ -110,11 +141,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <ThemeSync />
           <FestivalSplashHost profileName={profile.name} />
           <div className="site-frame">
-            <SiteHeader profile={profile} />
+            <SiteNav />
             <main className="site-main" id="main">
               {children}
             </main>
-            <SiteFooter profile={profile} />
           </div>
         </ThemeProvider>
       </body>

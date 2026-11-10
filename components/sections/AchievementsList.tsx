@@ -56,7 +56,10 @@ export function AchievementsList({
                   {achievement.image ? (
                     <div className={styles.media}>
                       <Image
-                        alt={`${achievement.title} image`}
+                        alt={
+                          achievement.imageAlt ??
+                          `${achievement.title} certificate`
+                        }
                         className={styles.image}
                         fill
                         sizes="8rem"

@@ -28,9 +28,6 @@ export function Hero({ profile }: HeroProps) {
             <ThemedLink className={styles.secondary} href="#contact">
               Contact me
             </ThemedLink>
-            <a className={styles.textLink} href={profile.resumeUrl}>
-              Resume
-            </a>
           </div>
         </div>
 

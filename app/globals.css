@@ -3,22 +3,26 @@
 
 :root {
   color-scheme: dark;
-  --bg: #030807;
-  --surface: #08110e;
-  --surface-strong: #0d1a15;
-  --text: #d9f7e9;
-  --muted: #8fb4a4;
-  --border: #1b3129;
-  --accent: #3dffa0;
-  --accent-strong: #a4ffcb;
-  --accent-soft: #0d2c1f;
-  --accent-contrast: #02140a;
-  --focus: #67e8f9;
-  --shadow: 0 18px 55px rgb(0 0 0 / 55%);
+  --bg: #0a0a0f;
+  --surface: #101018;
+  --surface-strong: #15151f;
+  --text: #f4f3f8;
+  --muted: #8d8c9a;
+  --border: rgb(255 255 255 / 10%);
+  --accent: #6c5ce7;
+  --accent-strong: #8b7cff;
+  --accent-soft: rgb(108 92 231 / 14%);
+  --accent-contrast: #f4f3f8;
+  --focus: #3ddc97;
+  --shadow: 0 28px 80px rgb(0 0 0 / 55%);
 
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, "Times New Roman", serif;
+  --font-monogram:
+    var(--font-unbounded), var(--font-syne), ui-sans-serif, sans-serif;
   --font-mono:
     var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", Consolas,
     "Liberation Mono", Menlo, monospace;
@@ -59,18 +63,26 @@
 }
 
 html {
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: clip;
   background-color: var(--bg);
-  background-image: radial-gradient(
-    ellipse at 15% -10%,
-    color-mix(in srgb, var(--accent) 16%, transparent),
-    transparent 55%
-  );
+  background-image:
+    radial-gradient(
+      ellipse 65% 48% at 78% 2%,
+      color-mix(in srgb, var(--accent) 20%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 55% 42% at 8% 58%,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 72%
+    );
   background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-sans);
@@ -80,40 +92,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-body::after {
-  position: fixed;
-  inset: -10% 0;
-  z-index: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 3px,
-    color-mix(in srgb, var(--accent) 12%, transparent) 3px 4px
-  );
-  content: "";
-  pointer-events: none;
-  opacity: 0.12;
-  animation: scanline-drift 10s linear infinite;
-}
-
-@keyframes scanline-drift {
-  from {
-    transform: translateY(0);
-  }
-
-  to {
-    transform: translateY(4px);
-  }
-}
-
 h1,
 h2,
 h3,
 h4 {
   margin-block: 0;
-  font-family: var(--font-mono);
-  font-weight: 650;
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
   text-wrap: balance;
 }
 
@@ -164,13 +151,37 @@ select {
   color: var(--accent-contrast);
 }
 
+html.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 600ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.reveal-ready [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  body::after {
-    display: none;
+  #top,
+  #work,
+  #achievements,
+  #toolkit,
+  #contact {
+    scroll-margin-top: 4.75rem;
+  }
+
+  html.reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   *,

@@ -98,14 +98,6 @@
   color: var(--text);
 }
 
-.textLink {
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .card {
   padding: var(--space-5);
   border: 1px solid var(--border);
