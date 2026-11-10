@@ -1,134 +1,48 @@
 import { cacheLife } from "next/cache";
 import type { Profile } from "@/lib/schema";
+import { fetchPublicRepos, type RepoSummary } from "@/lib/github-client";
 import { filterRepos } from "@/lib/repo-filter";
 
-const GITHUB_API = "https://api.github.com";
+export type { RepoSummary } from "@/lib/github-client";
 
-export interface RepoSummary {
-  name: string;
-  description: string | null;
-  url: string;
-  homepage: string | null;
-  stars: number;
-  forks: number;
-  language: string | null;
-  topics: string[];
-  updatedAt: string;
-  pushedAt: string;
-  fork: boolean;
-  archived: boolean;
-}
+const lastGoodRepos = new Map<string, readonly RepoSummary[]>();
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
+async function getCachedRepos(profile: Profile): Promise<RepoSummary[] | null> {
+  "use cache";
 
-function stringOrNull(value: unknown): string | null {
-  return typeof value === "string" ? value : null;
-}
+  const result = await fetchPublicRepos(
+    profile.githubUsername,
+    process.env.GITHUB_TOKEN,
+    fetch,
+  );
 
-function nonEmptyStringOrNull(value: unknown): string | null {
-  const text = stringOrNull(value)?.trim();
-  return text ? text : null;
-}
-
-function stringArray(value: unknown): string[] {
-  return Array.isArray(value)
-    ? value.filter((entry): entry is string => typeof entry === "string")
-    : [];
-}
-
-function numberOrZero(value: unknown): number {
-  return typeof value === "number" && Number.isFinite(value) ? value : 0;
-}
-
-function githubHeaders(): Record<string, string> {
-  const headers: Record<string, string> = {
-    Accept: "application/vnd.github+json",
-    "User-Agent": "sujal-portfolio",
-    "X-GitHub-Api-Version": "2022-11-28",
-  };
-
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-  }
-
-  return headers;
-}
-
-async function fetchGitHubData(url: string): Promise<unknown | null> {
-  try {
-    const response = await fetch(url, {
-      headers: githubHeaders(),
-    });
-
-    if (!response.ok) {
-      console.warn(
-        `[github] ${response.status} ${response.statusText} for ${url}. Falling back to local content.`,
-      );
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.warn(
-      `[github] Request failed for ${url}: ${message}. Falling back to local content.`,
-    );
-    return null;
-  }
-}
-
-function toRepoSummary(value: unknown): RepoSummary | null {
-  if (
-    !isRecord(value) ||
-    typeof value.name !== "string" ||
-    typeof value.html_url !== "string" ||
-    typeof value.fork !== "boolean" ||
-    typeof value.archived !== "boolean"
-  ) {
+  if (!result.ok) {
+    cacheLife({ stale: 30, revalidate: 1, expire: 300 });
     return null;
   }
 
-  return {
-    name: value.name,
-    description: stringOrNull(value.description),
-    url: value.html_url,
-    homepage: nonEmptyStringOrNull(value.homepage),
-    stars: numberOrZero(value.stargazers_count),
-    forks: numberOrZero(value.forks_count),
-    language: stringOrNull(value.language),
-    topics: stringArray(value.topics),
-    updatedAt: stringOrNull(value.updated_at) ?? "",
-    pushedAt: stringOrNull(value.pushed_at) ?? "",
-    fork: value.fork,
-    archived: value.archived,
-  };
+  cacheLife("hours");
+  return result.repos;
 }
 
 export async function getAllPublicRepos(
   profile: Profile,
 ): Promise<RepoSummary[]> {
-  "use cache";
-  cacheLife("hours");
-
   const username = profile.githubUsername.trim();
 
   if (!username) {
     return [];
   }
 
-  const data = await fetchGitHubData(
-    `${GITHUB_API}/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`,
-  );
+  const repos = await getCachedRepos(profile);
 
-  if (!Array.isArray(data)) {
-    return [];
+  if (repos === null) {
+    const previous = lastGoodRepos.get(username.toLowerCase());
+    return previous ? [...previous] : [];
   }
 
-  return data
-    .map((entry) => toRepoSummary(entry))
-    .filter((repo): repo is RepoSummary => repo !== null);
+  lastGoodRepos.set(username.toLowerCase(), repos);
+  return repos;
 }
 
 export async function getPublicRepos(profile: Profile): Promise<RepoSummary[]> {

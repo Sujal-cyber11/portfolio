@@ -1,1 +1,27 @@
-{}
+{
+  "Jan_Sahayak": {
+    "problem": "Many people miss government welfare schemes they qualify for because eligibility rules are hard to find and hard to read. It asks a short set of questions and lists the schemes the user is eligible for.",
+    "role": "Backend and rules-engine developer (team project)",
+    "contribution": "Designed and built the eligibility logic and most of the backend. Rules are deterministic and explainable, so every result shows why a scheme does or doesn't apply."
+  },
+  "trustlens-ai": {
+    "title": "TrustLens AI",
+    "problem": "Scams such as lookalike domains, fake refund requests and deceptive pages are hard for ordinary users to spot. It flags them and explains the risk in plain language.",
+    "role": "Sole developer",
+    "contribution": "Designed and built the whole system alone, from the detection rules and browser extension to the desktop client. Built as a hackathon prototype."
+  },
+  "Base_Converter": {
+    "role": "Sole developer",
+    "contribution": "My first project after learning C, written to apply what I had learned. It taught me manual memory handling and positional number systems."
+  },
+  "MedPulse": {
+    "title": "MedPulse",
+    "repoUrl": "https://github.com/IMMENSE-BUILDER/MedPulse",
+    "liveUrl": "https://medpulse-ai-snowy.vercel.app/",
+    "description": "Price comparison for Indian prescription medicines and diagnostic lab tests.",
+    "problem": "Medicine and lab-test prices vary widely across pharmacies and labs, and patients rarely see the cheaper options.",
+    "role": "Co-developer: logic design and backend",
+    "contribution": "Designed the application logic and built the backend (team project).",
+    "category": "featured"
+  }
+}

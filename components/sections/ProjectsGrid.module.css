@@ -11,6 +11,11 @@
   gap: var(--space-5);
 }
 
+.gridCompact {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-4);
+}
+
 .card {
   display: flex;
   flex-direction: column;
@@ -76,6 +81,17 @@
   padding: var(--space-5);
 }
 
+.compact .body {
+  padding: var(--space-4);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: auto;
+}
+
 .titleRow {
   display: flex;
   align-items: baseline;
@@ -99,11 +115,34 @@
   font-size: var(--text-sm);
 }
 
+.details {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-strong);
+}
+
+.details dt {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.details dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-top: auto;
 }
 
 .tags li {

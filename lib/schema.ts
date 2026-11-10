@@ -41,12 +41,22 @@ export const profileSchema = z
 
 export const projectStatusSchema = z.enum(["building", "done", "archived"]);
 
+export const projectCategorySchema = z.enum([
+  "featured",
+  "experiment",
+  "discovered",
+]);
+
 export const projectOverrideSchema = z
   .object({
     title: z.string().trim().min(1).optional(),
     description: z.string().trim().optional(),
+    problem: z.string().trim().min(1).max(280).optional(),
+    role: z.string().trim().min(1).max(80).optional(),
+    contribution: z.string().trim().min(1).max(400).optional(),
     image: uploadFilename.optional(),
     tags: z.array(z.string().trim().min(1)).optional(),
+    category: projectCategorySchema.optional(),
     featured: z.boolean().optional(),
     status: projectStatusSchema.optional(),
     hidden: z.boolean().optional(),
@@ -127,6 +137,7 @@ export const festivalsSchema = z.array(festivalSchema);
 export type Social = z.infer<typeof socialSchema>;
 export type Profile = z.infer<typeof profileSchema>;
 export type ProjectStatus = z.infer<typeof projectStatusSchema>;
+export type ProjectCategory = z.infer<typeof projectCategorySchema>;
 export type ProjectOverride = z.infer<typeof projectOverrideSchema>;
 export type ProjectOverrides = z.infer<typeof projectOverridesSchema>;
 export type AchievementCategory = z.infer<typeof achievementCategorySchema>;

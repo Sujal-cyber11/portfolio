@@ -4,8 +4,15 @@ import {
   getPublicRepos,
   type RepoSummary,
 } from "@/lib/github";
+import {
+  classifyProject,
+  EXPERIMENT_TOPIC,
+  FEATURED_TOPIC,
+  withoutCategoryTopics,
+} from "@/lib/project-categories";
 import type {
   Profile,
+  ProjectCategory,
   ProjectOverride,
   ProjectOverrides,
   ProjectStatus,
@@ -15,11 +22,15 @@ export interface ProjectView {
   id: string;
   title: string;
   description: string;
+  problem?: string;
+  role?: string;
+  contribution?: string;
   tags: string[];
   repoUrl?: string;
   liveUrl?: string;
   image?: string;
   featured: boolean;
+  category: ProjectCategory;
   date: string;
   status: ProjectStatus;
   repoName: string | null;
@@ -65,16 +76,27 @@ function repoToProject(
   override: ProjectOverride | undefined,
 ): ProjectView {
   const pushedDate = repo.pushedAt || repo.updatedAt;
+  const decision = classifyProject(repo.topics, override);
+
+  if (decision.conflictingTopics) {
+    console.warn(
+      `[projects] ${repo.name} has both "${FEATURED_TOPIC}" and "${EXPERIMENT_TOPIC}" topics; keeping it featured.`,
+    );
+  }
 
   return {
     id: repo.name,
     title: override?.title ?? formatRepoTitle(repo.name),
     description: override?.description ?? repo.description ?? "",
-    tags: override?.tags ?? repo.topics,
+    problem: override?.problem,
+    role: override?.role,
+    contribution: override?.contribution,
+    tags: withoutCategoryTopics(override?.tags ?? repo.topics),
     repoUrl: repo.url,
     liveUrl: toHttpUrl(repo.homepage),
     image: override?.image,
-    featured: override?.featured ?? false,
+    featured: decision.category === "featured",
+    category: decision.category,
     date: pushedDate ? pushedDate.slice(0, 10) : "1970-01-01",
     status: override?.status ?? "done",
     repoName: repo.name,
@@ -85,15 +107,21 @@ function repoToProject(
 }
 
 function manualToProject(key: string, override: ProjectOverride): ProjectView {
+  const decision = classifyProject([], override);
+
   return {
     id: key,
     title: override.title ?? formatRepoTitle(key),
     description: override.description ?? "",
-    tags: override.tags ?? [],
+    problem: override.problem,
+    role: override.role,
+    contribution: override.contribution,
+    tags: withoutCategoryTopics(override.tags ?? []),
     repoUrl: override.repoUrl,
     liveUrl: override.liveUrl,
     image: override.image,
-    featured: override.featured ?? false,
+    featured: decision.category === "featured",
+    category: decision.category,
     date: override.date ?? "1970-01-01",
     status: override.status ?? "done",
     repoName: null,
@@ -106,22 +134,40 @@ function manualToProject(key: string, override: ProjectOverride): ProjectView {
 export function selectFeaturedProjects(
   projects: readonly ProjectView[],
 ): ProjectView[] {
-  const withDescriptions = projects.filter(
-    (project) => project.description.trim().length > 0,
-  );
-  const explicit = withDescriptions.filter((project) => project.featured);
+  const featured: ProjectView[] = [];
 
-  if (explicit.length > 0) {
-    return [...explicit];
+  for (const project of projects) {
+    if (project.category !== "featured") {
+      continue;
+    }
+
+    if (project.description.trim().length > 0) {
+      featured.push(project);
+      continue;
+    }
+
+    console.warn(
+      `[projects] Featured project "${project.title}" has no description and is hidden from the home page.`,
+    );
   }
 
-  return withDescriptions
-    .filter(
-      (project): project is ProjectView & { pushedAt: string } =>
-        project.pushedAt !== null && project.pushedAt.length > 0,
-    )
-    .sort((a, b) => b.pushedAt.localeCompare(a.pushedAt))
-    .slice(0, 3);
+  return featured;
+}
+
+export function groupProjectsByCategory(
+  projects: readonly ProjectView[],
+): Record<ProjectCategory, ProjectView[]> {
+  const groups: Record<ProjectCategory, ProjectView[]> = {
+    featured: [],
+    experiment: [],
+    discovered: [],
+  };
+
+  for (const project of projects) {
+    groups[project.category].push(project);
+  }
+
+  return groups;
 }
 
 export function mergeProjects(
