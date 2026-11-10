@@ -74,7 +74,7 @@ Do not prefix this variable with `NEXT_PUBLIC_`, and never commit the token. The
 
 ## What to fill in or verify
 
-- `content/profile.json`: contact details are set for Sujal; edit the resume value when ready.
+- `content/profile.json`: contact details are set for Sujal; review them when ready.
 - `content/projects.json`: optional per-repo overrides keyed by GitHub repo name. Unmatched keys become manual projects.
 - `content/festivals.json`: verify dates, gift closing lines and gift palettes. Movable festivals need explicit windows for future years; set `recurringYearly` only when the date is fixed.
 - Add `GITHUB_TOKEN` to `.env.local` for higher GitHub API rate limits (optional; the build falls back gracefully).

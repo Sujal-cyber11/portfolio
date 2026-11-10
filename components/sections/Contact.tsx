@@ -13,17 +13,12 @@ export function Contact({ profile }: ContactProps) {
           <div>
             <p className="eyebrow">Contact</p>
             <h2 id="contact-title">Get in touch</h2>
-            <p className={styles.copy}>
-              The fastest way to reach me is email.
-            </p>
+            <p className={styles.copy}>The fastest way to reach me is email.</p>
           </div>
 
           <div className={styles.actions}>
             <a className={styles.primary} href={`mailto:${profile.email}`}>
               {profile.email}
-            </a>
-            <a className={styles.secondary} href={profile.resumeUrl}>
-              View resume
             </a>
           </div>
 

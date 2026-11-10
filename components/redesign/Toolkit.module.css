@@ -1,0 +1,93 @@
+.toolkit {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(5rem, 10vh, 8rem) 0;
+}
+
+.toolkit::before {
+  position: absolute;
+  right: 4%;
+  bottom: -10rem;
+  width: 44rem;
+  height: 32rem;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgb(108 92 231 / 22%), transparent 66%);
+  content: "";
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 2.5rem, 72.5rem);
+  margin-inline: auto;
+}
+
+.headingRow {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.heading {
+  font-size: clamp(3.2rem, 7.5vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.065em;
+  line-height: 0.86;
+}
+
+.watermark {
+  color: rgb(255 255 255 / 6%);
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.065em;
+  line-height: 0.86;
+  pointer-events: none;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 2.2rem;
+}
+
+.pills li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.55rem 1rem;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 2%);
+  color: rgb(244 243 248 / 82%);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.skillIcon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--text);
+}
+
+.iconGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.genericIcon {
+  color: var(--accent-strong);
+}
+
+@media (max-width: 56rem) {
+  .watermark {
+    display: none;
+  }
+}

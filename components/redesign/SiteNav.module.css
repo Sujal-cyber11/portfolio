@@ -1,0 +1,104 @@
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  border-bottom: 1px solid rgb(255 255 255 / 6%);
+  background: rgb(10 10 15 / 72%);
+  backdrop-filter: blur(18px);
+}
+
+.nav {
+  display: flex;
+  width: min(100% - 2.5rem, 72.5rem);
+  min-height: 4.2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-inline: auto;
+}
+
+.brand,
+.links a,
+.mobilePanel a {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-decoration: underline;
+  text-decoration-color: rgb(244 243 248 / 55%);
+  text-underline-offset: 0.32em;
+}
+
+.brand {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto;
+}
+
+.links a {
+  transition:
+    color 180ms ease,
+    text-decoration-color 180ms ease;
+}
+
+.links a:hover,
+.mobilePanel a:hover,
+.brand:hover {
+  color: var(--accent-strong);
+  text-decoration-color: var(--accent-strong);
+}
+
+.brand[aria-current="page"],
+.links a[aria-current="page"],
+.mobilePanel a[aria-current="page"] {
+  color: var(--accent-strong);
+  text-decoration-color: var(--accent-strong);
+}
+
+.menuButton {
+  display: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-decoration: underline;
+  text-underline-offset: 0.32em;
+  cursor: pointer;
+}
+
+.mobilePanel {
+  display: none;
+}
+
+@media (max-width: 56rem) {
+  .nav {
+    min-height: 3.8rem;
+  }
+
+  .links {
+    display: none;
+  }
+
+  .menuButton {
+    display: block;
+  }
+
+  .mobilePanel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-top: 1px solid rgb(255 255 255 / 8%);
+    background: rgb(10 10 15 / 96%);
+  }
+}

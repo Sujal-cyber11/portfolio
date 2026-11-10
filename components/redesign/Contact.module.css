@@ -1,0 +1,171 @@
+.contact {
+  position: relative;
+  overflow: hidden;
+  padding: 7.5rem 0 clamp(5rem, 10vh, 7rem);
+  text-align: center;
+}
+
+.contact::before {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  width: 46rem;
+  height: 30rem;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgb(108 92 231 / 28%), transparent 68%);
+  content: "";
+  filter: blur(50px);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 2.5rem, 72.5rem);
+  margin-inline: auto;
+}
+
+.heading {
+  font-size: clamp(3.4rem, 8.4vw, 7rem);
+  font-weight: 900;
+  letter-spacing: -0.065em;
+  line-height: 0.9;
+}
+
+.heading span {
+  color: var(--accent-strong);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+.accounts {
+  display: flex;
+  max-width: 52rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 3.5rem auto 0;
+  text-align: left;
+}
+
+.accountRow {
+  position: relative;
+  display: grid;
+  min-height: 3.2rem;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 2%);
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.accountRow:hover {
+  border-color: rgb(139 124 255 / 45%);
+  background: rgb(108 92 231 / 8%);
+}
+
+.accountRow:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.accountLabel {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.accountRight {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.accountValue {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accountRow:hover .accountLabel,
+.accountRow:hover .accountValue,
+.accountRow:hover .accountArrow {
+  color: var(--accent-strong);
+}
+
+.accountArrow {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: color 180ms ease;
+}
+
+.rowLink {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.rowLink:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.copyButton {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: 0 0 auto;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 0.4rem;
+  background: rgb(255 255 255 / 4%);
+  color: var(--muted);
+  cursor: pointer;
+  place-items: center;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.copyButton:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+
+.site {
+  margin-top: 2rem;
+  color: rgb(255 255 255 / 24%);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+.site a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site a:hover {
+  color: var(--muted);
+}

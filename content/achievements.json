@@ -1,38 +1,16 @@
 [
   {
-    "id": "placeholder-ctf-top-10",
-    "title": "Top 10 finish — National CTF",
-    "issuer": "National CTF",
-    "date": "2026-09-14",
-    "description": "Finished in the top ten of a beginner-friendly national capture-the-flag event.",
+    "id": "azinhack-2026",
+    "title": "AzinHack",
+    "issuer": "IoSC EDC",
+    "date": "2026-10-21",
+    "description": "Certificate of Appreciation for outstanding performance as a Participant during the offline round at GGSIPU EDC.",
     "category": "hackathon",
-    "placeholder": true
-  },
-  {
-    "id": "placeholder-python-certificate",
-    "title": "Python for Everybody",
-    "issuer": "Coursera",
-    "date": "2026-06-02",
-    "description": "Completed a Python fundamentals course covering data structures, web scraping and databases.",
-    "category": "certificate",
-    "placeholder": true
-  },
-  {
-    "id": "placeholder-coding-award",
-    "title": "School coding award",
-    "issuer": "School technology event",
-    "date": "2025-12-10",
-    "description": "Recognised for a small automation project at a school technology event.",
-    "category": "award",
-    "placeholder": true
-  },
-  {
-    "id": "placeholder-open-source",
-    "title": "First open-source contribution",
-    "issuer": "Open-source project maintainers",
-    "date": "2026-04-21",
-    "description": "Landed a documentation fix in a small open-source repository.",
-    "category": "other",
-    "placeholder": true
+    "image": "azinhack-certificate.jpg",
+    "imageAlt": "AzinHack Certificate of Appreciation for participation in the offline round at GGSIPU EDC.",
+    "placement": "Top 25",
+    "outOf": "of 400 teams",
+    "round": "Final round.",
+    "eventDetails": ["Offline round at GGSIPU EDC", "Organized by IoSC EDC"]
   }
 ]

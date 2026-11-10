@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import { AchievementsList } from "@/components/sections/AchievementsList";
-import { Contact } from "@/components/sections/Contact";
-import { Hero } from "@/components/sections/Hero";
-import { ProjectsGrid } from "@/components/sections/ProjectsGrid";
-import { RepoList } from "@/components/sections/RepoList";
-import { Skills } from "@/components/sections/Skills";
-import { getLatestAchievements, getProfile } from "@/lib/content";
-import { getPublicRepos } from "@/lib/github";
-import { withoutCategoryTopics } from "@/lib/project-categories";
-import { getProjects, selectFeaturedProjects } from "@/lib/projects";
+import { Achievements } from "@/components/redesign/Achievements";
+import { Contact } from "@/components/redesign/Contact";
+import { CursorGlow } from "@/components/redesign/CursorGlow";
+import { Hero } from "@/components/redesign/Hero";
+import { RevealOnScroll } from "@/components/redesign/RevealOnScroll";
+import { Toolkit } from "@/components/redesign/Toolkit";
+import { Work } from "@/components/redesign/Work";
+import { getProfile, getProjectOverrides } from "@/lib/content";
+import { buildWorkProjects } from "@/lib/landing-data";
 
 export const metadata: Metadata = {
   alternates: {
@@ -16,45 +15,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Home() {
+export default function Home() {
   const profile = getProfile();
-  const [projects, repos] = await Promise.all([
-    getProjects(profile),
-    getPublicRepos(profile),
-  ]);
-  const featuredProjects = selectFeaturedProjects(projects);
-  const repoListRepos = repos.map((repo) => ({
-    ...repo,
-    topics: withoutCategoryTopics(repo.topics),
-  }));
-  const latestAchievements = getLatestAchievements(2);
+  const workProjects = buildWorkProjects(profile, getProjectOverrides());
 
   return (
     <>
+      <CursorGlow />
+      <RevealOnScroll />
       <Hero profile={profile} />
-
-      {featuredProjects.length > 0 ? (
-        <ProjectsGrid
-          intro="Selected work across Python, C and security tooling."
-          projects={featuredProjects}
-          title="Featured projects"
-          viewAllHref="/projects"
-        />
-      ) : null}
-
-      {latestAchievements.length > 0 ? (
-        <AchievementsList
-          achievements={latestAchievements}
-          intro="Recent milestones and things I am learning from."
-          title="Latest achievements"
-          viewAllHref="/achievements"
-        />
-      ) : null}
-
-      <Skills skills={profile.skills} />
-
-      <RepoList repos={repoListRepos} username={profile.githubUsername} />
-
+      <Work projects={workProjects} />
+      <Achievements />
+      <Toolkit />
       <Contact profile={profile} />
     </>
   );
