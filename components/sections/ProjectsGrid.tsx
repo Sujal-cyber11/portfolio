@@ -18,6 +18,7 @@ interface ProjectsGridProps {
   projects: ProjectView[];
   viewAllHref?: string;
   emptyMessage?: string;
+  variant?: "default" | "compact";
 }
 
 export function ProjectsGrid({
@@ -27,8 +28,16 @@ export function ProjectsGrid({
   projects,
   viewAllHref,
   emptyMessage = "No projects yet.",
+  variant = "default",
 }: ProjectsGridProps) {
   const headingId = `${id}-title`;
+  const isCompact = variant === "compact";
+  const gridClassName = isCompact
+    ? `${styles.grid} ${styles.gridCompact}`
+    : styles.grid;
+  const cardClassName = isCompact
+    ? `${styles.card} ${styles.compact}`
+    : styles.card;
 
   return (
     <section className="section" id={id} aria-labelledby={headingId}>
@@ -49,27 +58,29 @@ export function ProjectsGrid({
         {projects.length === 0 ? (
           <p className="muted">{emptyMessage}</p>
         ) : (
-          <div className={styles.grid}>
+          <div className={gridClassName}>
             {projects.map((project) => (
-              <article className={styles.card} key={project.id}>
-                <div className={styles.media}>
-                  {project.image ? (
-                    <Image
-                      alt={`${project.title} preview`}
-                      className={styles.image}
-                      fill
-                      sizes="(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 33vw"
-                      src={`/uploads/${project.image}`}
-                    />
-                  ) : (
-                    <span className={styles.monogram} aria-hidden="true">
-                      {project.title.slice(0, 1)}
+              <article className={cardClassName} key={project.id}>
+                {isCompact ? null : (
+                  <div className={styles.media}>
+                    {project.image ? (
+                      <Image
+                        alt={`${project.title} preview`}
+                        className={styles.image}
+                        fill
+                        sizes="(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 33vw"
+                        src={`/uploads/${project.image}`}
+                      />
+                    ) : (
+                      <span className={styles.monogram} aria-hidden="true">
+                        {project.title.slice(0, 1)}
+                      </span>
+                    )}
+                    <span className={styles.status}>
+                      {statusLabels[project.status]}
                     </span>
-                  )}
-                  <span className={styles.status}>
-                    {statusLabels[project.status]}
-                  </span>
-                </div>
+                  </div>
+                )}
 
                 <div className={styles.body}>
                   <div className={styles.titleRow}>
@@ -79,53 +90,79 @@ export function ProjectsGrid({
                     </time>
                   </div>
 
-                  {project.description ? (
+                  {!isCompact && project.description.trim().length > 0 ? (
                     <p className={styles.description}>{project.description}</p>
                   ) : null}
 
-                  {project.tags.length > 0 ? (
-                    <ul className={styles.tags} aria-label="Tags">
-                      {project.tags.map((tag) => (
-                        <li key={tag}>{tag}</li>
-                      ))}
-                    </ul>
+                  {!isCompact &&
+                  (project.problem || project.role || project.contribution) ? (
+                    <dl className={styles.details}>
+                      {project.problem ? (
+                        <>
+                          <dt>Problem</dt>
+                          <dd>{project.problem}</dd>
+                        </>
+                      ) : null}
+                      {project.role ? (
+                        <>
+                          <dt>My role</dt>
+                          <dd>{project.role}</dd>
+                        </>
+                      ) : null}
+                      {project.contribution ? (
+                        <>
+                          <dt>Contribution</dt>
+                          <dd>{project.contribution}</dd>
+                        </>
+                      ) : null}
+                    </dl>
                   ) : null}
 
-                  {project.stars !== null || project.language !== null ? (
-                    <p className={styles.repoMeta}>
-                      {project.stars !== null ? (
-                        <span>{project.stars} stars</span>
-                      ) : null}
-                      {project.language ? (
-                        <span>{project.language}</span>
-                      ) : null}
-                    </p>
-                  ) : null}
+                  <div className={styles.footer}>
+                    {project.tags.length > 0 ? (
+                      <ul className={styles.tags} aria-label="Tags">
+                        {project.tags.map((tag) => (
+                          <li key={tag}>{tag}</li>
+                        ))}
+                      </ul>
+                    ) : null}
 
-                  {project.repoUrl || project.liveUrl ? (
-                    <div className={styles.links}>
-                      {project.repoUrl ? (
-                        <a
-                          href={project.repoUrl}
-                          aria-label={`${project.title} repository`}
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          Repository
-                        </a>
-                      ) : null}
-                      {project.liveUrl ? (
-                        <a
-                          href={project.liveUrl}
-                          aria-label={`${project.title} live site`}
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          Live site
-                        </a>
-                      ) : null}
-                    </div>
-                  ) : null}
+                    {project.stars !== null || project.language !== null ? (
+                      <p className={styles.repoMeta}>
+                        {project.stars !== null ? (
+                          <span>{project.stars} stars</span>
+                        ) : null}
+                        {project.language ? (
+                          <span>{project.language}</span>
+                        ) : null}
+                      </p>
+                    ) : null}
+
+                    {project.repoUrl || project.liveUrl ? (
+                      <div className={styles.links}>
+                        {project.repoUrl ? (
+                          <a
+                            href={project.repoUrl}
+                            aria-label={`${project.title} repository`}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            Repository
+                          </a>
+                        ) : null}
+                        {project.liveUrl ? (
+                          <a
+                            href={project.liveUrl}
+                            aria-label={`${project.title} live site`}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            Live site
+                          </a>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </article>
             ))}

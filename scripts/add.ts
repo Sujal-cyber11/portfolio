@@ -21,6 +21,7 @@ import {
   projectOverridesSchema,
   type Achievement,
   type Festival,
+  type ProjectCategory,
   type ProjectOverride,
   type ProjectStatus,
 } from "../lib/schema";
@@ -171,6 +172,13 @@ async function buildProject(): Promise<{
   });
   const title = await askText("Title override (optional)");
   const description = await askText("Description override (optional)");
+  const problem = await askText(
+    "Problem this project solves (optional, max 280 characters)",
+  );
+  const role = await askText("Your role (optional, max 80 characters)");
+  const contribution = await askText(
+    "Your contribution (optional, max 400 characters)",
+  );
   const tags = splitList(
     await askText("Tags override (comma-separated, optional)"),
   );
@@ -182,7 +190,15 @@ async function buildProject(): Promise<{
   const date = await askText(
     "Date override (manual projects only, YYYY-MM-DD, optional)",
   );
-  const featured = await askConfirm("Feature this project?", false);
+  const category = await askSelect<ProjectCategory>(
+    "Project category",
+    [
+      { value: "discovered", label: "Discovered" },
+      { value: "featured", label: "Featured" },
+      { value: "experiment", label: "Experiment" },
+    ],
+    "discovered",
+  );
   const status = await askSelect<ProjectStatus>(
     "Project status",
     [
@@ -197,12 +213,15 @@ async function buildProject(): Promise<{
   const parsed = projectOverrideSchema.safeParse({
     ...(title ? { title } : {}),
     ...(description ? { description } : {}),
+    ...(problem ? { problem } : {}),
+    ...(role ? { role } : {}),
+    ...(contribution ? { contribution } : {}),
     ...(tags.length > 0 ? { tags } : {}),
     ...(image ? { image } : {}),
     ...(repoUrl ? { repoUrl } : {}),
     ...(liveUrl ? { liveUrl } : {}),
     ...(date ? { date } : {}),
-    featured,
+    ...(category !== "discovered" ? { category } : {}),
     status,
     hidden,
   });

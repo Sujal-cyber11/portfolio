@@ -72,12 +72,11 @@ Do not prefix this variable with `NEXT_PUBLIC_`, and never commit the token. The
 
 Using the files directly:
 
-- `content/projects.json` — optional overrides keyed by GitHub repo name. Supported: `title`, `description`, `image`, `tags`, `featured`, `status`, `hidden`, plus `repoUrl`, `liveUrl` and `date` for manual projects.
+- `content/projects.json` — optional overrides keyed by GitHub repo name. Supported: `title`, `description`, `problem`, `role`, `contribution`, `image`, `tags`, `category`, `featured`, `status`, `hidden`, plus `repoUrl`, `liveUrl` and `date` for manual projects.
+- Optional project context: `problem` (max 280 characters), `role` (max 80 characters) and `contribution` (max 400 characters). Use values such as `"<what problem this solves>"`, `"<your role>"` and `"<what you contributed>"`. They appear in a details list on Featured and Other project cards, never on Experiments, and come only from `content/projects.json`; GitHub cannot supply them.
 - Unmatched project keys are rendered as manual projects.
 - `content/achievements.json` — `issuer` is the issuer or event name.
 - `content/festivals.json` — multiple `windows` and `gift` blocks (type, closing line, palette) are supported.
-
-Featured projects use `"featured": true` overrides. If none are set, the three most recently pushed repos with descriptions are used.
 
 ### Excluding repositories
 
@@ -87,6 +86,22 @@ The GitHub section skips the portfolio's own repo automatically:
 - `VERCEL_GIT_REPO_SLUG` and `GITHUB_REPO` are also checked, so renaming the repo still works.
 - Forks and archived repos are skipped unless `includeForks` or `includeArchived` is set to `true`.
 - Add more repo names to `excludeRepos` to hide them from the list.
+
+## Project categories
+
+Projects are split into three categories. The two category topics are reserved and are never shown as tag chips.
+
+| Category   | How to set it                                                                                                  | Where it appears                                           |
+| ---------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Featured   | GitHub topic `portfolio-featured`, or `"category": "featured"` / `"featured": true` in `content/projects.json` | Home "Featured projects" and /projects "Featured projects" |
+| Experiment | GitHub topic `portfolio-experiment`, or `"category": "experiment"` in `content/projects.json`                  | /projects "Experiments" (compact cards)                    |
+| Discovered | Default when no category is set                                                                                | /projects "Other projects"                                 |
+
+Precedence: `category` in `content/projects.json` wins over everything, then `featured: true`, then `portfolio-featured`, then `portfolio-experiment`, otherwise discovered. If a repo has both topics, featured wins and the build logs a warning. `hidden: true` still hides a project.
+
+New public repositories are discovered by default. To change a category without editing code, add or remove the topic on GitHub; it takes effect within the repository cache window described below (stale 5 minutes, revalidate 1 hour, expire 1 day). Use `category` in `content/projects.json` for manual projects and explicit overrides.
+
+The home page only shows featured projects with a non-empty description. A featured project without a description stays on /projects, is left off the home page, and logs a build warning. There is no "most recent" fallback.
 
 ## Repository discovery and caching
 

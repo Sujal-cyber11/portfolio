@@ -1,6 +1,6 @@
 import { ProjectsGrid } from "@/components/sections/ProjectsGrid";
 import { getProfile } from "@/lib/content";
-import { getProjects } from "@/lib/projects";
+import { getProjects, groupProjectsByCategory } from "@/lib/projects";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
@@ -13,6 +13,7 @@ export const metadata = buildPageMetadata({
 export default async function ProjectsPage() {
   const profile = getProfile();
   const projects = await getProjects(profile);
+  const categories = groupProjectsByCategory(projects);
 
   return (
     <>
@@ -24,11 +25,28 @@ export default async function ProjectsPage() {
         </p>
       </div>
 
-      {projects.length > 0 ? (
+      {categories.featured.length > 0 ? (
         <ProjectsGrid
-          intro="Sorted newest first."
-          projects={projects}
-          title="All projects"
+          id="featured-projects"
+          projects={categories.featured}
+          title="Featured projects"
+        />
+      ) : null}
+
+      {categories.discovered.length > 0 ? (
+        <ProjectsGrid
+          id="other-projects"
+          projects={categories.discovered}
+          title="Other projects"
+        />
+      ) : null}
+
+      {categories.experiment.length > 0 ? (
+        <ProjectsGrid
+          id="experiments"
+          projects={categories.experiment}
+          title="Experiments"
+          variant="compact"
         />
       ) : null}
     </>

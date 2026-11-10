@@ -7,6 +7,7 @@ import { RepoList } from "@/components/sections/RepoList";
 import { Skills } from "@/components/sections/Skills";
 import { getLatestAchievements, getProfile } from "@/lib/content";
 import { getPublicRepos } from "@/lib/github";
+import { withoutCategoryTopics } from "@/lib/project-categories";
 import { getProjects, selectFeaturedProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
@@ -22,6 +23,10 @@ export default async function Home() {
     getPublicRepos(profile),
   ]);
   const featuredProjects = selectFeaturedProjects(projects);
+  const repoListRepos = repos.map((repo) => ({
+    ...repo,
+    topics: withoutCategoryTopics(repo.topics),
+  }));
   const latestAchievements = getLatestAchievements(2);
 
   return (
@@ -48,7 +53,7 @@ export default async function Home() {
 
       <Skills skills={profile.skills} />
 
-      <RepoList repos={repos} username={profile.githubUsername} />
+      <RepoList repos={repoListRepos} username={profile.githubUsername} />
 
       <Contact profile={profile} />
     </>
